@@ -23,4 +23,9 @@ public class ErrorHandler {
         return new ErrorResponse("Validation failed");
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleThrowable(final Exception e) {
+        return new ErrorResponse("Unexpected error");
+    }
 }

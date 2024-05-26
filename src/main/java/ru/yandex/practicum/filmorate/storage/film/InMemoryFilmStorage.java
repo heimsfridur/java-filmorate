@@ -35,26 +35,25 @@ public class InMemoryFilmStorage implements FilmStorage {
         int filmId = newFilm.getId();
         Film oldFilm = getFilmById(filmId);
 
-        if (films.containsKey(filmId)) {
-            newFilm.setLikesFromUsers(oldFilm.getLikesFromUsers());
+        if (!films.containsKey(filmId)) {
+            log.warn(String.format("Can not update film. There is no film with id %d", filmId));
+            throw new NotFoundException(String.format("Film with id %d is not found", newFilm.getId()));
 
-            films.put(filmId, newFilm);
-            log.info(String.format("Film with id %d was updated", filmId));
-            return newFilm;
         }
+        newFilm.setLikesFromUsers(oldFilm.getLikesFromUsers());
 
-        log.warn(String.format("Can not update film. There is no film with id %d", filmId));
-        throw new NotFoundException(String.format("Film with id %d is not found", newFilm.getId()));
-    }
+        films.put(filmId, newFilm);
+        log.info(String.format("Film with id %d was updated", filmId));
+        return newFilm;
+      }
 
     @Override
     public Film getFilmById(int id) {
-        if (films.containsKey(id)) {
-            return films.get(id);
-        } else {
+        if (!films.containsKey(id)) {
             log.warn(String.format("Can't find film with id %d", id));
             throw new NotFoundException(String.format("Can't find film with id %d", id));
         }
+        return films.get(id);
     }
 }
 

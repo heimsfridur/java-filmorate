@@ -38,29 +38,28 @@ public class InMemoryUserStorage implements UserStorage {
         int userId = newUser.getId();
         User oldUser = getUserById(userId);
 
-        if (users.containsKey(userId)) {
-            if (newUser.getName() == null) {
-                newUser.setName(newUser.getLogin());
-            }
-            newUser.setLikedFilms(oldUser.getLikedFilms());
-            newUser.setFriends(oldUser.getFriends());
-
-            users.put(userId, newUser);
-            log.info(String.format("User with id %d was updated", userId));
-            return newUser;
+        if (!users.containsKey(userId)) {
+            log.warn(String.format("Can not update user. There is no user with id %d", userId));
+            throw new NotFoundException(String.format("User with id %d is not found", newUser.getId()));
         }
 
-        log.warn(String.format("Can not update user. There is no user with id %d", userId));
-        throw new NotFoundException(String.format("User with id %d is not found", newUser.getId()));
+        if (newUser.getName() == null) {
+            newUser.setName(newUser.getLogin());
+        }
+        newUser.setLikedFilms(oldUser.getLikedFilms());
+        newUser.setFriends(oldUser.getFriends());
+
+        users.put(userId, newUser);
+        log.info(String.format("User with id %d was updated", userId));
+        return newUser;
     }
 
     @Override
     public User getUserById(int id) {
-        if (users.containsKey(id)) {
-            return users.get(id);
-        } else {
+        if (!users.containsKey(id)) {
             log.warn(String.format("Can't find user with id %d", id));
             throw new NotFoundException(String.format("Can't find user with id %d", id));
         }
+        return users.get(id);
     }
 }
