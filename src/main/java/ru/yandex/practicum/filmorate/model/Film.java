@@ -4,12 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotations.ValidReleaseDate;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Film.
@@ -17,6 +19,7 @@ import java.util.Set;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Film {
     private int id;
 
@@ -33,6 +36,9 @@ public class Film {
     @Positive
     private int duration;
 
-    private Set<Integer> likesFromUsers;
+    private Set<Integer> likesFromUsers = new HashSet<>();
 
+    private Mpa mpa;
+
+    private Set<Genre> genres = new HashSet<>();
 }

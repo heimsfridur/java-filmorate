@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -28,8 +29,5 @@ public class User {
     @PastOrPresent(message = "Birthday should not be in the future.")
     private LocalDate birthday;
 
-    private Set<Integer> friends;
-
-    private Set<Integer> likedFilms;
-
+    private Set<Integer> friends = new HashSet<>();
 }

@@ -3,22 +3,21 @@
 
 Table films {
   film_id INT [primary key]
-  name VARCHAR [not null]
-  description VARCHAR(200)
-  releaseDate DATE [not null]
-  duration INT [not null]
-  genre int
-  mpa int
+  film_name VARCHAR [not null]
+  film_description VARCHAR(200)
+  film_releaseDate DATE [not null]
+  film_duration INT [not null]
+  film_mpa int
 }
 
 Table МРА {
-  mpa_id INT [primary key, ref: < films.mpa]
-  name VARCHAR
+  mpa_id INT [primary key, ref: < films.film_mpa]
+  mpa_name VARCHAR
 }
 
 Table genres {
   genre_id INT [primary key]
-  name VARCHAR [not null, unique]
+  genre_name VARCHAR [not null, unique]
 }
 
 Table films_genres {
@@ -28,16 +27,16 @@ Table films_genres {
 
 Table users {
   user_id INT [pk, increment]
-  email VARCHAR [not null, unique]
-  login VARCHAR [not null]
-  name VARCHAR
-  birthday DATE [not null]
+  user_email VARCHAR [not null, unique]
+  user_login VARCHAR [not null]
+  user_name VARCHAR
+  user_birthday DATE [not null]
 }
 
 Table friends {
   user_id INT
   friend_id INT
-  status boolean
+  friends_status boolean
 }
 
 Table films_likes {
