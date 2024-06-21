@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -14,6 +15,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+
+    public Collection<User> getAllUsers() {
+        return userStorage.getAllUsers();
+    }
 
     public User addUser(User user) {
         if (user.getName() == null || user.getName().isBlank()) {

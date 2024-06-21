@@ -15,7 +15,6 @@ import java.sql.Date;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +28,7 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<Film> getAllFilms() {
+    public List<Film> getAllFilms() {
         String sql = "SELECT films.*, mpa.mpa_id, mpa.mpa_name, FROM films LEFT JOIN mpa ON films.film_mpa = mpa.mpa_id;";
         List<Film> films = jdbcTemplate.query(sql, new FilmRowMapper());
 
@@ -43,7 +42,7 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
-    public List<Genre> getGenresForFilmFromDB(Film film) {
+    private List<Genre> getGenresForFilmFromDB(Film film) {
         String sqlForGenres = "SELECT genres.genre_id, genres.genre_name " +
                 "FROM films_genres " +
                 "LEFT JOIN genres ON films_genres.genre_id = genres.genre_id " +
@@ -52,7 +51,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlForGenres, new GenreRowMapper(), film.getId());
     }
 
-    public List<Integer> getLikesForFilmFromDB(Film film) {
+    private List<Integer> getLikesForFilmFromDB(Film film) {
         String sqlForLikes = "SELECT user_id FROM films_likes WHERE film_id = ?";
 
         return jdbcTemplate.queryForList(sqlForLikes, Integer.class, film.getId());

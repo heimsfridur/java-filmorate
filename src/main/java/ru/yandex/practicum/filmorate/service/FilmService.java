@@ -23,6 +23,15 @@ public class FilmService {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
 
+    public Collection<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
+    }
+
+    public Film getFilmById(int id) {
+        return filmStorage.getFilmById(id);
+    }
+
+
     public Film addFilm(Film film) {
         if (film.getMpa() != null && !mpaStorage.isMpaExist(film.getMpa().getId())) {
             throw new ValidationException(String.format("Mpa with ID %d does not exist.", film.getMpa().getId()));

@@ -12,7 +12,7 @@ public class UserRowMapper implements RowMapper<User> {
         return User.builder()
                 .id(rs.getInt("user_id"))
                 .email(rs.getString("user_email"))
-                .login(rs.getString("user_email"))
+                .login(rs.getString("user_login"))
                 .name(rs.getString("user_name"))
                 .birthday(rs.getDate("user_birthday").toLocalDate())
                 .build();
