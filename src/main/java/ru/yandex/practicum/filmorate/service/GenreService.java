@@ -15,15 +15,14 @@ import java.util.Collection;
 public class GenreService {
     private final GenreStorage genreStorage;
 
-    public Collection<Genre> getAllGenres() {
-        return genreStorage.getAllGenres();
+    public Collection<Genre> getAll() {
+        return genreStorage.getAll();
     }
 
-    public Genre getGenreById(int id) {
-        try {
-            return genreStorage.getGenreById(id);
-        } catch (RuntimeException exc) {
-            throw new NotFoundException(String.format("Can not find genre with id %d", id));
+    public Genre getById(int id) {
+        if (!genreStorage.isExist(id)) {
+            throw new NotFoundException(String.format("Genre with ID %d does not exist.", id));
         }
+        return genreStorage.getById(id);
     }
 }

@@ -15,15 +15,14 @@ import java.util.Collection;
 public class MpaService {
     private final MpaStorage mpaStorage;
 
-    public Collection<Mpa> getAllMpas() {
+    public Collection<Mpa> getAll() {
         return mpaStorage.getAllMpas();
     }
 
-    public Mpa getMpaById(int id) {
-        try {
-            return mpaStorage.getMpaById(id);
-        } catch (RuntimeException exc) {
-            throw new NotFoundException(String.format("Can not find mpa with id %d", id));
+    public Mpa getById(int id) {
+        if (!mpaStorage.isExist(id)) {
+            throw new NotFoundException(String.format("Mpa with ID %d does not exist.", id));
         }
+        return mpaStorage.getMpaById(id);
     }
 }

@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -23,37 +24,36 @@ public class FilmService {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
 
-    public Collection<Film> getAllFilms() {
-        return filmStorage.getAllFilms();
+    public Collection<Film> getAll() {
+        return filmStorage.getAll();
     }
 
-    public Film getFilmById(int id) {
-        return filmStorage.getFilmById(id);
+    public Film getById(int id) {
+        return filmStorage.getById(id);
     }
 
 
-    public Film addFilm(Film film) {
-        if (film.getMpa() != null && !mpaStorage.isMpaExist(film.getMpa().getId())) {
+    public Film add(Film film) {
+        if (film.getMpa() != null && !mpaStorage.isExist(film.getMpa().getId())) {
             throw new ValidationException(String.format("Mpa with ID %d does not exist.", film.getMpa().getId()));
         }
 
-        if (film.getGenres() != null) {
-            for (Genre genre : film.getGenres()) {
-                if (!genreStorage.isGenreExist(genre.getId())) {
-                    throw new ValidationException(String.format("Genre with ID %d does not exist.", genre.getId()));
-                }
+        Set<Genre> genres = film.getGenres();
+        if (genres != null) {
+            if (!genreStorage.allGenresExist(genres)) {
+                throw new ValidationException("Not all genres exist.");
             }
         }
 
         log.info(String.format("Film with name %s was added with ID %d.", film.getName(), film.getId()));
-        return filmStorage.addFilm(film);
+        return filmStorage.add(film);
     }
 
     public void addLike(int filmId, int userId) {
-        if (!filmStorage.isFilmExists(filmId)) {
+        if (!filmStorage.isExists(filmId)) {
             throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
         }
-        if (!userStorage.isUserExists(userId)) {
+        if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         if (filmStorage.isFilmLikedByUser(filmId, userId)) {
@@ -65,10 +65,10 @@ public class FilmService {
     }
 
     public void deleteLike(int filmId, int userId) {
-        if (!filmStorage.isFilmExists(filmId)) {
+        if (!filmStorage.isExists(filmId)) {
             throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
         }
-        if (!userStorage.isUserExists(userId)) {
+        if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
         if (!filmStorage.isFilmLikedByUser(filmId, userId)) {
@@ -79,16 +79,16 @@ public class FilmService {
         filmStorage.deleteLikeFromFilm(filmId, userId);
     }
 
-    public Collection<Film> getPopularFilms(int count) {
-        return filmStorage.getTopFilms(count);
+    public Collection<Film> getPopular(int count) {
+        return filmStorage.getPopular(count);
     }
 
-    public Film updateFilm(Film newFilm) {
+    public Film update(Film newFilm) {
         int filmId = newFilm.getId();
-        if (!filmStorage.isFilmExists(filmId)) {
+        if (!filmStorage.isExists(filmId)) {
             log.warn(String.format("Can not update film. There is no film with id %d", filmId));
             throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
         }
-        return filmStorage.updateFilm(newFilm);
+        return filmStorage.update(newFilm);
     }
 }

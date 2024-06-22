@@ -16,17 +16,15 @@ public class MpaController {
     private final MpaService mpaService;
 
     @GetMapping
-    public Collection<Mpa> getAllMpas() {
-        try {
-            return mpaService.getAllMpas();
-        } catch (Exception e) {
-            log.error("Error getting all MPAs", e);
-            return null;
-        }
+    public Collection<Mpa> getAll() {
+        log.info("Received a request to get all mpas");
+        return mpaService.getAll();
     }
 
     @GetMapping("/{id}")
     public Mpa getMpaById(@PathVariable Integer id) {
-        return mpaService.getMpaById(id);
+        log.info(String.format("Received a request to get mpa with id %d", id));
+
+        return mpaService.getById(id);
     }
 }

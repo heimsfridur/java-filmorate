@@ -4,26 +4,23 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@JdbcTest
+@SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import(FilmDbStorage.class)
+//@Import({FilmDbStorage.class, FilmRowMapper.class, GenreRowMapper.class})
 public class FilmDbStorageTest {
     private final FilmStorage filmStorage;
 
@@ -32,7 +29,7 @@ public class FilmDbStorageTest {
     @DirtiesContext
     public void shouldGetFilmByIdTest() {
 
-        Film film = filmStorage.getFilmById(1);
+        Film film = filmStorage.getById(1);
 
         assertThat(film)
                 .isNotNull()
@@ -43,7 +40,7 @@ public class FilmDbStorageTest {
     @Sql(scripts = {"/test-data.sql"})
     @DirtiesContext
     public void shouldGtAllFilmsTest() {
-        List<Film> films = filmStorage.getAllFilms();
+        List<Film> films = filmStorage.getAll();
 
         assertEquals(2, films.size(), "The size of films list is incorrect.");
         assertThat(films.get(0).getName()).isEqualTo("Film One");
@@ -60,9 +57,9 @@ public class FilmDbStorageTest {
                 .duration(150)
                 .build();
 
-        Film savedFilm = filmStorage.addFilm(film);
+        Film savedFilm = filmStorage.add(film);
 
-        List<Film> films = filmStorage.getAllFilms();
+        List<Film> films = filmStorage.getAll();
         assertEquals(1, films.size(), "The film was not added.");
         assertThat(films.get(0)).hasFieldOrPropertyWithValue("id", 1);
 
@@ -88,9 +85,9 @@ public class FilmDbStorageTest {
                 .duration(150)
                 .mpa(mpa)
                 .build();
-        filmStorage.updateFilm(newFilm);
+        filmStorage.update(newFilm);
 
-        Film updatedFilm = filmStorage.getFilmById(1);
+        Film updatedFilm = filmStorage.getById(1);
         assertThat(updatedFilm).hasFieldOrPropertyWithValue("id", 1);
         assertThat(updatedFilm).hasFieldOrPropertyWithValue("name", "new_film1");
         assertThat(updatedFilm).hasFieldOrPropertyWithValue("description", "new_descr1");
@@ -101,7 +98,7 @@ public class FilmDbStorageTest {
     @DirtiesContext
     public void shouldGetPopularFilmsTest() {
         filmStorage.addLikeToFilm(2, 1);
-        List<Film> popularFilms = filmStorage.getTopFilms(5);
+        List<Film> popularFilms = filmStorage.getPopular(5);
 
         assertEquals(2, popularFilms.size(), "The amount of popular films is wrong.");
         assertThat(popularFilms.get(0)).hasFieldOrPropertyWithValue("id", 2);
@@ -114,10 +111,10 @@ public class FilmDbStorageTest {
     public void shouldAddLikeToFilmTest() {
         filmStorage.addLikeToFilm(1, 2);
 
-        Film film = filmStorage.getFilmById(1);
-        Set<Integer> likes = film.getLikesFromUsers();
+        Film film = filmStorage.getById(1);
+        int likesAmount = filmStorage.getAmountOfLikes(film);
 
-        assertEquals(1, likes.size(), "The amount of likes is incorrect.");
+        assertEquals(1, likesAmount, "The amount of likes is incorrect.");
     }
 
     @Test
@@ -128,9 +125,9 @@ public class FilmDbStorageTest {
         filmStorage.deleteLikeFromFilm(1, 2);
 
 
-        Film film = filmStorage.getFilmById(1);
-        Set<Integer> likes = film.getLikesFromUsers();
+        Film film = filmStorage.getById(1);
+        int likesAmount = filmStorage.getAmountOfLikes(film);
 
-        assertEquals(0, likes.size(), "Like was not deleted.");
+        assertEquals(0, likesAmount, "Like was not deleted.");
     }
 }

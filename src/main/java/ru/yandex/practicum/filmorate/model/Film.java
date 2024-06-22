@@ -27,6 +27,7 @@ public class Film {
     private String name;
 
     @Size(max = 200, message = "The length of the description should not exceed 200 characters")
+    @NotBlank
     private String description;
 
     @NotNull
@@ -36,9 +37,6 @@ public class Film {
     @Positive
     private int duration;
 
-    private Set<Integer> likesFromUsers = new HashSet<>();
-
-    @NotNull
     private Mpa mpa;
 
     private Set<Genre> genres = new HashSet<>();

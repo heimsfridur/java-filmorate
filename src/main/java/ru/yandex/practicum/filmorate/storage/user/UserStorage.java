@@ -4,15 +4,15 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.List;
 
 public interface UserStorage {
-    public List<User> getAllUsers();
+    public List<User> getAll();
 
-    public User addUser(User user);
+    public User add(User user);
 
-    public User updateUser(User newUser);
+    public User update(User newUser);
 
     public User getUserById(int id);
 
-    public boolean isUserExists(int userId);
+    public boolean isExists(int userId);
 
     public void addFriend(int userId, int friendId);
 

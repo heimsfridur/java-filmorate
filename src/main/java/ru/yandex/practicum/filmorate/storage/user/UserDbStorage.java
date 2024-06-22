@@ -20,17 +20,18 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final UserRowMapper userRowMapper;
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAll() {
         String sql = "SELECT users.*, FROM users";
-        List<User> users = jdbcTemplate.query(sql, new UserRowMapper());
+        List<User> users = jdbcTemplate.query(sql, userRowMapper);
 
         return users;
     }
 
     @Override
-    public User addUser(User user) {
+    public User add(User user) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         String sql = "INSERT INTO users (user_email, user_login, user_name, user_birthday) VALUES (?, ?, ?, ?)";
@@ -57,7 +58,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User newUser) {
+    public User update(User newUser) {
         String sql = "UPDATE users SET user_email = ?, user_login = ?, user_name = ?, " +
                 "user_birthday = ? " +
                 "WHERE user_id = ?";
@@ -71,13 +72,13 @@ public class UserDbStorage implements UserStorage {
     public User getUserById(int id) {
         String sql = "SELECT * FROM users WHERE user_id = ? LIMIT 1";
 
-        User user = jdbcTemplate.queryForObject(sql, new UserRowMapper(), id);
+        User user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
 
         return user;
     }
 
     @Override
-    public boolean isUserExists(int userId) {
+    public boolean isExists(int userId) {
         String sql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId);
         return count != null && count > 0;
@@ -107,7 +108,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> getFriendsOfUser(int userId) {
         String sql = "SELECT users.* FROM users WHERE user_id IN (" +
                 "SELECT friend_id FROM friends WHERE friends_status = true AND user_id = ?)";
-        return jdbcTemplate.query(sql, new UserRowMapper(), userId);
+        return jdbcTemplate.query(sql, userRowMapper, userId);
     }
 
     @Override
@@ -116,6 +117,6 @@ public class UserDbStorage implements UserStorage {
                 "user_id IN (SELECT friend_id FROM friends WHERE friends_status = true AND user_id = ?) AND " +
                 "user_id IN (SELECT friend_id FROM friends WHERE friends_status = true AND user_id = ?)";
 
-        return jdbcTemplate.query(sql, new UserRowMapper(), userId, otherId);
+        return jdbcTemplate.query(sql, userRowMapper, userId, otherId);
     }
 }

@@ -9,5 +9,5 @@ public interface MpaStorage {
 
     public Mpa getMpaById(int id);
 
-    public boolean isMpaExist(int mpaId);
+    public boolean isExist(int mpaId);
 }

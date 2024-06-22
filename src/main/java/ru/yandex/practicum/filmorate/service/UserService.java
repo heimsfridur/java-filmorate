@@ -16,34 +16,36 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
 
-    public Collection<User> getAllUsers() {
-        return userStorage.getAllUsers();
+    public Collection<User> getAll() {
+        return userStorage.getAll();
     }
 
-    public User addUser(User user) {
+    public User add(User user) {
+        setCorrectName(user);
+        return userStorage.add(user);
+    }
+
+    public User update(User newUser) {
+        int userId = newUser.getId();
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
+        setCorrectName(newUser);
+
+        return userStorage.update(newUser);
+    }
+
+    private void setCorrectName(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        return userStorage.addUser(user);
-    }
-
-    public User updateUser(User newUser) {
-        int userId = newUser.getId();
-        if (!userStorage.isUserExists(userId)) {
-            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
-        }
-
-        if (newUser.getName() == null || newUser.getName().isBlank()) {
-            newUser.setName(newUser.getLogin());
-        }
-        return userStorage.updateUser(newUser);
     }
 
     public void addFriend(int userId, int friendId) {
-        if (!userStorage.isUserExists(userId)) {
+        if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
-        if (!userStorage.isUserExists(friendId)) {
+        if (!userStorage.isExists(friendId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", friendId));
         }
         if (userStorage.areUsersFriends(userId, friendId)) {
@@ -56,15 +58,13 @@ public class UserService {
     }
 
     public void deleteFriend(int userId, int friendId) {
-        if (!userStorage.isUserExists(userId)) {
+        if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
-        if (!userStorage.isUserExists(friendId)) {
+        if (!userStorage.isExists(friendId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", friendId));
         }
         if (!userStorage.areUsersFriends(userId, friendId)) {
-           // throw new IllegalArgumentException(String.format("Users with IDs %d and %d are not friends already.",
-             //       userId, friendId));
             log.info(String.format("Users with IDs %d and %d are not friends already. Do nothing.", userId, friendId));
             return;
         }
@@ -74,7 +74,7 @@ public class UserService {
     }
 
     public List<User> getFriendsOfUser(int userId) {
-        if (!userStorage.isUserExists(userId)) {
+        if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
 
@@ -82,7 +82,7 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
-        if (!userStorage.isUserExists(userId) || !userStorage.isUserExists(otherId)) {
+        if (!userStorage.isExists(userId) || !userStorage.isExists(otherId)) {
             throw new NotFoundException(String.format("User with ID %d or %id does not exist.", userId, otherId));
         }
 

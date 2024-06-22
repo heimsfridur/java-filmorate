@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
@@ -18,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@JdbcTest
+@SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Import(UserDbStorage.class)
@@ -40,7 +40,7 @@ public class UserDbStorageTest {
     @Sql(scripts = {"/test-data.sql"})
     @DirtiesContext
     public void shouldGetAllUsersTest() {
-        List<User> users = userStorage.getAllUsers();
+        List<User> users = userStorage.getAll();
 
         assertEquals(3, users.size(), "The size of users list is incorrect.");
         assertThat(users.get(0).getEmail()).isEqualTo("user1@example.com");
@@ -57,8 +57,8 @@ public class UserDbStorageTest {
                 .birthday(LocalDate.of(1990, 11, 10))
                 .build();
 
-        userStorage.addUser(user);
-        List<User> users = userStorage.getAllUsers();
+        userStorage.add(user);
+        List<User> users = userStorage.getAll();
 
         assertEquals(1, users.size(), "The user was not added.");
         assertThat(users.get(0)).hasFieldOrPropertyWithValue("id", 1);
@@ -76,7 +76,7 @@ public class UserDbStorageTest {
                 .birthday(LocalDate.of(2023, 10, 11))
                 .build();
 
-        userStorage.updateUser(newUser);
+        userStorage.update(newUser);
 
         User updtedUser = userStorage.getUserById(1);
         assertThat(updtedUser).hasFieldOrPropertyWithValue("id", 1);
