@@ -3,14 +3,17 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.awt.*;
-import java.util.List;
-
+import java.util.Collection;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -18,41 +21,74 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final MpaStorage mpaStorage;
+    private final GenreStorage genreStorage;
 
-    public Film addLike(int filmId, int userId) {
-        User user = userStorage.getUserById(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        if (!user.getLikedFilms().contains(filmId)) {
-            user.getLikedFilms().add(filmId);
-            film.getLikesFromUsers().add(userId);
-            log.info(String.format("Add like from user with id %d to film with id %d", userId, filmId));
-        } else {
-            log.info(String.format("User %d has already liked film %d", userId, filmId));
-        }
-        return film;
+    public Collection<Film> getAll() {
+        return filmStorage.getAll();
     }
 
-    public Film deleteLike(int filmId, int userId) {
-        User user = userStorage.getUserById(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        if (film.getLikesFromUsers().contains(userId)) {
-            user.getLikedFilms().remove(filmId);
-            film.getLikesFromUsers().remove(userId);
-        }
-        return film;
+    public Film getById(int id) {
+        return filmStorage.getById(id);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        int filmsCount = filmStorage.getAllFilms().size();
-        if (count > filmsCount) {
-            count = filmsCount;
+
+    public Film add(Film film) {
+        if (film.getMpa() != null && !mpaStorage.isExist(film.getMpa().getId())) {
+            throw new ValidationException(String.format("Mpa with ID %d does not exist.", film.getMpa().getId()));
         }
 
-        List<Film> list =  filmStorage.getAllFilms().stream()
-                .sorted((film1, film2) ->
-                        film2.getLikesFromUsers().size() - film1.getLikesFromUsers().size())
-                .limit(count)
-                .toList();
-        return list;
+        Set<Genre> genres = film.getGenres();
+        if (genres != null) {
+            if (!genreStorage.allGenresExist(genres)) {
+                throw new ValidationException("Not all genres exist.");
+            }
+        }
+
+        log.info(String.format("Film with name %s was added with ID %d.", film.getName(), film.getId()));
+        return filmStorage.add(film);
+    }
+
+    public void addLike(int filmId, int userId) {
+        if (!filmStorage.isExists(filmId)) {
+            throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
+        }
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
+        if (filmStorage.isFilmLikedByUser(filmId, userId)) {
+            throw new IllegalArgumentException(String.format("User with ID %d has already liked film with ID %d",
+                    userId, filmId));
+        }
+
+        filmStorage.addLikeToFilm(filmId, userId);
+    }
+
+    public void deleteLike(int filmId, int userId) {
+        if (!filmStorage.isExists(filmId)) {
+            throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
+        }
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
+        if (!filmStorage.isFilmLikedByUser(filmId, userId)) {
+            throw new IllegalArgumentException(String.format("User with ID %d has not liked film with ID %d",
+                    userId, filmId));
+        }
+
+        filmStorage.deleteLikeFromFilm(filmId, userId);
+    }
+
+    public Collection<Film> getPopular(int count) {
+        return filmStorage.getPopular(count);
+    }
+
+    public Film update(Film newFilm) {
+        int filmId = newFilm.getId();
+        if (!filmStorage.isExists(filmId)) {
+            log.warn(String.format("Can not update film. There is no film with id %d", filmId));
+            throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
+        }
+        return filmStorage.update(newFilm);
     }
 }

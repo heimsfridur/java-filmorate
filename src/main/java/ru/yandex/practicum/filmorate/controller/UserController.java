@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,42 +15,47 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @GetMapping
-    public Collection<User> getAllUsers() {
-        return userStorage.getAllUsers();
+    public Collection<User> getAll() {
+        log.info("Received a request to get all users");
+        return userService.getAll();
     }
 
     @PostMapping
-    public User addUser(@RequestBody @Valid User user) {
-        return userStorage.addUser(user);
+    public User add(@RequestBody @Valid User user) {
+        log.info("Received a request to add user");
+        return userService.add(user);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody @Valid User newUser) {
-        return userStorage.updateUser(newUser);
+    public User update(@RequestBody @Valid User newUser) {
+        log.info("Received a request to update user");
+        return userService.update(newUser);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        return userService.addFriend(id, friendId);
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        log.info("Received a request to add friend.");
+        userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        return userService.deleteFriend(id, friendId);
+    public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        log.info("Received a request to delete friend");
+        userService.deleteFriend(id, friendId);
     }
 
     @GetMapping("{id}/friends")
     public List<User> getFriendsOfUser(@PathVariable Integer id) {
+        log.info(String.format("Received a request to get friends of user with id %d", id));
         return userService.getFriendsOfUser(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        log.info(String.format("Received a request to get common friends for users %d and %d", id, otherId));
         return userService.getCommonFriends(id, otherId);
     }
 }

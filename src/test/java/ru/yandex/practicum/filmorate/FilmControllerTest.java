@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -36,11 +37,17 @@ public class FilmControllerTest {
 
     @Test
     void shouldAddFilm() throws Exception {
+        Mpa mpa = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+
         Film film = Film.builder()
                 .name("film1")
                 .description("descr1")
                 .releaseDate(LocalDate.of(2024, 10, 11))
                 .duration(150)
+                .mpa(mpa)
                 .build();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -56,11 +63,17 @@ public class FilmControllerTest {
 
     @Test
     void shouldUpdateFilm() throws Exception {
+        Mpa mpa = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+
         Film film = Film.builder()
                 .name("film1")
                 .description("descr1")
                 .releaseDate(LocalDate.of(2024, 10, 11))
                 .duration(150)
+                .mpa(mpa)
                 .build();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -78,6 +91,7 @@ public class FilmControllerTest {
                 .description("!!!!!!!")
                 .releaseDate(LocalDate.of(2024, 10, 11))
                 .duration(150)
+                .mpa(mpa)
                 .build();
         String requestBody2 = objectMapper.writeValueAsString(updatedFilm);
 
@@ -86,6 +100,4 @@ public class FilmControllerTest {
                         .content(requestBody2))
                 .andExpect(status().isOk());
     }
-
-
  }
