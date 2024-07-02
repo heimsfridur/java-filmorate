@@ -44,6 +44,38 @@ Table films_likes {
   user_id INT [ref: > users.user_id]
 }
 
+Table reviews {
+    review_id INT [pk, increment]
+    content VARCHAR
+    film_id INT [ref: > films.film_id]
+    user_id INT [ref: > users.user_id]
+    is_positive bool
+
+}
+
+Table review_rating {
+  review_id INT [ref: > reviews.review_id]
+  user_id INT [ref: > users.user_id]
+  is_helpful bool
+}
+
+Table directors {
+  director_id INT [pk, increment]
+  director_name VARCHAR
+}
+Table films_directors {
+  film_id INT [ref: > films.film_id]
+  director_id INT [ref: > directors.director_id]
+}
+
+Table feed {
+  event_id INT [pk, increment]
+  timestamp timestamp
+  user_id INT [ref: > users.user_id]
+  event_type  VARCHAR
+  operation VARCHAR
+  entity_id INT
+}
 
 
 Ref: "genres"."genre_id" < "films_genres"."genre_id"
@@ -52,3 +84,4 @@ Ref: "films"."film_id" < "films_genres"."film_id"
 Ref: "friends"."user_id" > "users"."user_id"
 
 Ref: "friends"."friend_id" > "users"."user_id"
+
