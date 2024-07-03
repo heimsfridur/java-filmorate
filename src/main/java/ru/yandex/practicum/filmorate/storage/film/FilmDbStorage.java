@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.AddException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
@@ -17,6 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -147,6 +149,12 @@ public class FilmDbStorage implements FilmStorage {
 //
 //        return topFilms;
 
+
+        addLikeToFilm(6, 1);
+        addLikeToFilm(6, 2);
+        addLikeToFilm(8, 2);
+        System.out.println(getAmountOfLikes(getById(6)));
+
         StringBuilder sqlQuery = new StringBuilder("SELECT * FROM films ");
         if (genre != null) {
             sqlQuery
@@ -164,10 +172,10 @@ public class FilmDbStorage implements FilmStorage {
                     .append("'");
         }
         sqlQuery
-                .append("GROUP BY films.film_id ORDER BY COUNT(films_likes.film_id) DESC LIMIT ")
+                .append(" GROUP BY films.film_id ORDER BY COUNT(films_likes.film_id) DESC LIMIT ")
                 .append(count);
         List<Film> topFilms = jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
-        genreDbStorage.loadGenresForFilms(topFilms);
+        //genreDbStorage.loadGenresForFilms(topFilms);
         return topFilms;
     }
 
