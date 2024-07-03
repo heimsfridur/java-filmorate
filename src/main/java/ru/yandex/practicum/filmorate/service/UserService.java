@@ -96,7 +96,7 @@ public class UserService {
         return userStorage.getUserById(userId);
     }
 
-    public void deleteUser(int userId){
+    public void deleteUser(int userId) {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
