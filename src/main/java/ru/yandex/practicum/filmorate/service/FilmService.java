@@ -29,6 +29,9 @@ public class FilmService {
     }
 
     public Film getById(int id) {
+        if (!filmStorage.isExists(id)) {
+            throw new NotFoundException(String.format("Film with ID %d does not exist.", id));
+        }
         return filmStorage.getById(id);
     }
 
@@ -102,5 +105,12 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
+
+    public void deleteById(int filmId) {
+        if (!filmStorage.isExists(filmId)) {
+            log.warn(String.format("There is no film with id %d", filmId));
+            throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
+        }
+        filmStorage.deleteById(filmId);
     }
 }

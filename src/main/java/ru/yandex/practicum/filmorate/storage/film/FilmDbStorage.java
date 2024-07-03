@@ -169,5 +169,9 @@ public class FilmDbStorage implements FilmStorage {
         genreDbStorage.loadGenresForFilms(films);
 
         return films;
+
+    public void deleteById(int filmId) {
+        String sql = "DELETE FROM films WHERE film_id = ? ";
+        jdbcTemplate.update(sql, filmId);
     }
 }

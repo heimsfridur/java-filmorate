@@ -88,4 +88,18 @@ public class UserService {
 
         return userStorage.getCommonFriends(userId, otherId);
     }
+
+    public User getUserById(int userId) {
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
+        return userStorage.getUserById(userId);
+    }
+
+    public void deleteUser(int userId) {
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
+        userStorage.deleteUser(userId);
+    }
 }
