@@ -153,4 +153,10 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM films_likes WHERE film_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, film.getId());
     }
+
+    @Override
+    public void deleteById(int filmId) {
+        String sql = "DELETE FROM films WHERE film_id = ? ";
+        jdbcTemplate.update(sql, filmId);
+    }
 }

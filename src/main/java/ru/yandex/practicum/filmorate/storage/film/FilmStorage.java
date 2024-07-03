@@ -24,4 +24,7 @@ public interface FilmStorage {
     public boolean isExists(int filmId);
 
     public int getAmountOfLikes(Film film);
+
+    public void deleteById(int filmId);
+
 }
