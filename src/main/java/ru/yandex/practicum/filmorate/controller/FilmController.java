@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,4 +62,14 @@ public class FilmController {
         log.info(String.format("Received a request to get top %d films", count));
         return filmService.getPopular(count);
     }
+
+    @GetMapping("/search")
+    public Collection<Film> searchFilms(@RequestParam
+                                       @NotBlank(message = "Param <<query>> must be not empty") String query,
+                                       @RequestParam
+                                       @NotBlank(message = "Param <<by>> must be not empty") String by) {
+        log.info(String.format("Received a request to GET /search %s by %s", query, by));
+        return filmService.searchFilms(query, by);
+    }
+
 }

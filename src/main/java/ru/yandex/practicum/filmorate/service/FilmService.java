@@ -91,4 +91,8 @@ public class FilmService {
         }
         return filmStorage.update(newFilm);
     }
+
+    public Collection<Film> searchFilms(String query, String by) {
+
+    }
 }
