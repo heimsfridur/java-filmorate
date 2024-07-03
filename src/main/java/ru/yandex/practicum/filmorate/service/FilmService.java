@@ -91,4 +91,16 @@ public class FilmService {
         }
         return filmStorage.update(newFilm);
     }
+
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        checkUserId(userId);
+        checkUserId(friendId);
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    private void checkUserId(int userId) {
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
+    }
 }
