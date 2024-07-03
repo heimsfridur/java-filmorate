@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface FilmStorage {
@@ -24,4 +25,6 @@ public interface FilmStorage {
     public boolean isExists(int filmId);
 
     public int getAmountOfLikes(Film film);
+
+    public List<Film> searchFilms(String query, String by);
 }

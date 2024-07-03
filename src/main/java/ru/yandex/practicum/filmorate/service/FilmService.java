@@ -93,6 +93,10 @@ public class FilmService {
     }
 
     public Collection<Film> searchFilms(String query, String by) {
-
+        if (!(by.contains("title") || by.contains("director") || by.contains("title,director") || by.contains("director,title") || by.contains("unknown"))) {
+            log.info("Invalid request params on searchFilm (param = {})", by);
+            throw new IllegalArgumentException("Invalid params");
+        }
+        return filmStorage.searchFilms(query, by);
     }
 }

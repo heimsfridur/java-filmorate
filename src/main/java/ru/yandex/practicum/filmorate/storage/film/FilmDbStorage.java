@@ -17,6 +17,7 @@ import java.sql.Date;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -152,5 +153,28 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT COUNT(*) " +
                 "FROM films_likes WHERE film_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, film.getId());
+    }
+
+    public List<Film> searchFilms(String query, String by) {
+        StringBuilder sql = new StringBuilder("SELECT films.* "
+                + "FROM films "
+                + "LEFT JOIN films_likes ON films.film_id = films_likes.film_id "
+                + "LEFT JOIN mpa ON mpa.mpa_id = films.mpa_id "
+                + "LEFT JOIN films_directors ON films.film_id = films_directors.film_id "
+                + "LEFT JOIN directors ON films_directors.director_id = directors.director_id ");
+        switch (by) {
+            case ("title"):
+                sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
+            case ("director"):
+                sql.append("WHERE LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
+            case ("title,director"):
+                sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
+                sql.append("OR LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
+            case ("director,title"):
+                sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
+                sql.append("OR LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
+        }
+        sql.append("GROUP BY films.film_id, films_likes.film_id " + "ORDER BY COUNT(films_likes.film_id) DESC");
+        return jdbcTemplate.query(sql.toString(), filmRowMapper);
     }
 }
