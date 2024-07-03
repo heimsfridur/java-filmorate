@@ -93,18 +93,18 @@ public class FilmDbStorageTest {
         assertThat(updatedFilm).hasFieldOrPropertyWithValue("description", "new_descr1");
     }
 
-    @Test
-    @Sql(scripts = {"/test-data.sql"})
-    @DirtiesContext
-    public void shouldGetPopularFilmsTest() {
-        //TODO fix test
-//        filmStorage.addLikeToFilm(2, 1);
-//        List<Film> popularFilms = filmStorage.getPopular(5);
-//
-//        assertEquals(2, popularFilms.size(), "The amount of popular films is wrong.");
-//        assertThat(popularFilms.get(0)).hasFieldOrPropertyWithValue("id", 2);
-//        assertThat(popularFilms.get(1)).hasFieldOrPropertyWithValue("id", 1);
-    }
+//    @Test
+//    @Sql(scripts = {"/test-data.sql"})
+//    @DirtiesContext
+//    public void shouldGetPopularFilmsTest() {
+//        //TODO fix test
+////        filmStorage.addLikeToFilm(2, 1);
+////        List<Film> popularFilms = filmStorage.getPopular(5);
+////
+////        assertEquals(2, popularFilms.size(), "The amount of popular films is wrong.");
+////        assertThat(popularFilms.get(0)).hasFieldOrPropertyWithValue("id", 2);
+////        assertThat(popularFilms.get(1)).hasFieldOrPropertyWithValue("id", 1);
+//    }
 
     @Test
     @Sql(scripts = {"/test-data.sql"})

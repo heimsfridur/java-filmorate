@@ -159,7 +159,9 @@ public class FilmDbStorage implements FilmStorage {
         if (year != null) {
             sqlQuery
                     .append(" WHERE year(films.film_releaseDate) = ")
-                    .append(year);
+                    .append("'")
+                    .append(year)
+                    .append("'");
         }
         sqlQuery
                 .append("GROUP BY films.film_id ORDER BY COUNT(films_likes.film_id) DESC LIMIT ")
