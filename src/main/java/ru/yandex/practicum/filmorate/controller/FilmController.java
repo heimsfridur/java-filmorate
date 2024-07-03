@@ -57,7 +57,7 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(defaultValue = "10")
-                                           @Positive(message = "Amount of films must be positive") Integer count) {
+                                       @Positive(message = "Amount of films must be positive") Integer count) {
         log.info(String.format("Received a request to get top %d films", count));
         return filmService.getPopular(count);
     }
