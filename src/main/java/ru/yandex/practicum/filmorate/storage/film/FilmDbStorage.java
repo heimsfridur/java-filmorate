@@ -165,14 +165,14 @@ public class FilmDbStorage implements FilmStorage {
         switch (by) {
             case ("title"):
                 sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
+                break;
             case ("director"):
                 sql.append("WHERE LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
-            case ("title,director"):
+                break;
+            case ("title,director"), ("director,title"):
                 sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
                 sql.append("OR LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
-            case ("director,title"):
-                sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
-                sql.append("OR LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
+                break;
         }
         sql.append("GROUP BY films.film_id, films_likes.film_id " + "ORDER BY COUNT(films_likes.film_id) DESC");
         return jdbcTemplate.query(sql.toString(), filmRowMapper);
