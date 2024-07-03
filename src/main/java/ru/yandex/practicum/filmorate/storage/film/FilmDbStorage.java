@@ -154,7 +154,7 @@ public class FilmDbStorage implements FilmStorage {
                     .append(genre)
                     .append(" LEFT JOIN genres ON films_genres.genre_id = genres.genre_id");
         }
-        sqlQuery.append("LEFT JOIN films_likes OM films.film_id = films_likes.film_id");
+        sqlQuery.append("LEFT JOIN films_likes ON films.film_id = films_likes.film_id");
 
         if (year != null) {
             sqlQuery
