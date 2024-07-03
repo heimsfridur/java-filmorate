@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.AddException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -14,10 +14,9 @@ import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
 
 import java.sql.Date;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
