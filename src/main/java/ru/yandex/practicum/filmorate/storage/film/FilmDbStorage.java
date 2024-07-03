@@ -134,29 +134,25 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopular(int count, Integer genre, Integer year) {
-        //TODO check
+//        //TODO check
 //        String sql = "SELECT films.* , MPA.* " +
 //                "FROM films LEFT JOIN films_likes ON films.film_id = films_likes.film_id " +
 //                "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id " +
 //                "GROUP BY films.film_id " +
 //                "ORDER BY COUNT(films_likes.user_id) DESC " +
 //                "LIMIT ?";
+//        addLikeToFilm(6, 1);
+//        addLikeToFilm(6, 2);
+//        addLikeToFilm(8, 2);
 //        List<Film> topFilms = jdbcTemplate.query(sql, filmRowMapper, count);
-//
-//        genreDbStorage.loadGenresForFilms(topFilms);
-//
+//        genreDbStorage.loadGenresForFilms(getAll());
 //        return topFilms;
-
-
-        addLikeToFilm(6, 1);
-        addLikeToFilm(6, 2);
-        addLikeToFilm(8, 2);
         System.out.println(getAmountOfLikes(getById(6)));
 
         StringBuilder sqlQuery = new StringBuilder("SELECT * FROM films ");
         if (genre != null) {
             sqlQuery
-                    .append("JOIN films_genres ON films.film_id = films_genres.film_id AND films_genres.genre_id = ")
+                    .append("INNER JOIN films_genres ON films.film_id = films_genres.film_id AND films_genres.genre_id = ")
                     .append(genre)
                     .append(" LEFT JOIN genres ON films_genres.genre_id = genres.genre_id");
         }
@@ -164,17 +160,16 @@ public class FilmDbStorage implements FilmStorage {
 
         if (year != null) {
             sqlQuery
-                    .append(" WHERE year(films.film_releaseDate) = ")
+                    .append(" WHERE YEAR(films.film_releaseDate) = ")
                     .append("'")
                     .append(year)
                     .append("'");
         }
         sqlQuery
-                .append(" GROUP BY films.film_id ORDER BY COUNT(films_likes.film_id) DESC LIMIT ")
+                .append(" GROUP BY films.film_id ORDER BY COUNT(films_likes.film_id) DESC " +  "LIMIT ")
                 .append(count);
-        List<Film> topFilms = jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
-        //genreDbStorage.loadGenresForFilms(topFilms);
-        return topFilms;
+        genreDbStorage.loadGenresForFilms(getAll());
+        return jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
     }
 
     @Override
