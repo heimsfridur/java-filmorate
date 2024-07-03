@@ -166,7 +166,9 @@ public class FilmDbStorage implements FilmStorage {
         sqlQuery
                 .append("GROUP BY films.film_id ORDER BY COUNT(films_likes.film_id) DESC LIMIT ")
                 .append(count);
-        return jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
+        List<Film> topFilms = jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
+        genreDbStorage.loadGenresForFilms(topFilms);
+        return topFilms;
     }
 
     @Override
