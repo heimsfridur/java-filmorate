@@ -25,6 +25,6 @@ public interface FilmStorage {
 
     public int getAmountOfLikes(Film film);
 
-    public void deleteFilmById(int filmId);
+    public void deleteById(int filmId);
 
 }

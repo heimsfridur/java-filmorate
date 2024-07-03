@@ -61,7 +61,6 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Integer id) {
-        System.out.println(id);
         log.info(String.format("Received a request to get get User with id %d", id));
         return userService.getUserById(id);
     }

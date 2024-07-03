@@ -155,7 +155,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteFilmById(int filmId) {
+    public void deleteById(int filmId) {
         String sql = "DELETE FROM films WHERE film_id = ? ";
         jdbcTemplate.update(sql, filmId);
     }

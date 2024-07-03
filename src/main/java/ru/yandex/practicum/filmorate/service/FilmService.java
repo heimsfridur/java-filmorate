@@ -95,11 +95,11 @@ public class FilmService {
         return filmStorage.update(newFilm);
     }
 
-    public void deleteFilmById(int filmId) {
+    public void deleteById(int filmId) {
         if (!filmStorage.isExists(filmId)) {
             log.warn(String.format("There is no film with id %d", filmId));
             throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
         }
-        filmStorage.deleteFilmById(filmId);
+        filmStorage.deleteById(filmId);
     }
 }
