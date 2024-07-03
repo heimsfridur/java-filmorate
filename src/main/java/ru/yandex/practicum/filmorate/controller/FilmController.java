@@ -61,4 +61,10 @@ public class FilmController {
         log.info(String.format("Received a request to get top %d films", count));
         return filmService.getPopular(count);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable Integer id) {
+        log.info(String.format("Received a request to delete film with id = %d", id));
+        filmService.deleteFilmById(id);
+    }
 }

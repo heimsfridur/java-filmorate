@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS genres (
 );
 
 CREATE TABLE IF NOT EXISTS  films_genres (
-  film_id INTEGER REFERENCES films(film_id),
+  film_id INTEGER REFERENCES films(film_id) ON DELETE CASCADE ,
   genre_id INTEGER REFERENCES genres(genre_id),
   PRIMARY KEY(film_id, genre_id)
 );
@@ -55,8 +55,8 @@ CREATE TABLE IF NOT EXISTS  films_likes (
 );
 
 CREATE TABLE IF NOT EXISTS friends (
-  user_id INTEGER REFERENCES users(user_id),
-  friend_id INTEGER REFERENCES users(user_id),
+  user_id INTEGER REFERENCES users(user_id)  ON DELETE CASCADE,
+  friend_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
   friends_status BOOLEAN,
   PRIMARY KEY(user_id, friend_id)
 );

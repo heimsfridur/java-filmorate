@@ -23,4 +23,6 @@ public interface UserStorage {
     public List<User> getFriendsOfUser(int userId);
 
     public List<User> getCommonFriends(int userId, int otherId);
+
+    public void deleteUser(int userId);
 }
