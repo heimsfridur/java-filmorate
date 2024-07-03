@@ -19,7 +19,7 @@ public interface FilmStorage {
 
     public void deleteLikeFromFilm(int filmId, int userId);
 
-    public List<Film> getPopular(int count);
+    public List<Film> getPopular(int count, Integer genreId, Integer year);
 
     public boolean isExists(int filmId);
 

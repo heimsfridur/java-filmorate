@@ -133,18 +133,38 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(int count) {
-        String sql = "SELECT films.* , MPA.* " +
-                "FROM films LEFT JOIN films_likes ON films.film_id = films_likes.film_id " +
-                "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id " +
-                "GROUP BY films.film_id " +
-                "ORDER BY COUNT(films_likes.user_id) DESC " +
-                "LIMIT ?";
-        List<Film> topFilms = jdbcTemplate.query(sql, filmRowMapper, count);
+    public List<Film> getPopular(int count, Integer genre, Integer year) {
+        //TODO check
+//        String sql = "SELECT films.* , MPA.* " +
+//                "FROM films LEFT JOIN films_likes ON films.film_id = films_likes.film_id " +
+//                "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id " +
+//                "GROUP BY films.film_id " +
+//                "ORDER BY COUNT(films_likes.user_id) DESC " +
+//                "LIMIT ?";
+//        List<Film> topFilms = jdbcTemplate.query(sql, filmRowMapper, count);
+//
+//        genreDbStorage.loadGenresForFilms(topFilms);
+//
+//        return topFilms;
 
-        genreDbStorage.loadGenresForFilms(topFilms);
+        StringBuilder sqlQuery = new StringBuilder("SELECT * FROM films ");
+        if (genre != null) {
+            sqlQuery
+                    .append("JOIN films_genres ON films.film_id = films_genres.film_id AND films_genres.genre_id = ")
+                    .append(genre)
+                    .append(" LEFT JOIN genres ON films_genres.genre_id = genres.genre_id");
+        }
+        sqlQuery.append("LEFT JOIN films_likes OM films.film_id = films_likes.film_id");
 
-        return topFilms;
+        if (year != null) {
+            sqlQuery
+                    .append(" WHERE year(films.film_releaseDate) = ")
+                    .append(year);
+        }
+        sqlQuery
+                .append("GROUP BY films.film_id ORDER BY COUNT(films_likes.film_id) DESC LIMIT ")
+                .append(count);
+        return jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
     }
 
     @Override
