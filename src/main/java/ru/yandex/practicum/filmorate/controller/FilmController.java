@@ -62,13 +62,11 @@ public class FilmController {
         return filmService.getPopular(count);
     }
 
-
     @GetMapping("/common")
     public Collection<Film> getCommonFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
         log.info("Received a request to get list of common films by users {} and {}", userId, friendId);
         return filmService.getCommonFilms(userId, friendId);
     }
-}
 
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable Integer id) {
@@ -76,4 +74,3 @@ public class FilmController {
         filmService.deleteById(id);
     }
 }
-

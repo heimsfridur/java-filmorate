@@ -105,6 +105,7 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
+    }
 
     public void deleteById(int filmId) {
         if (!filmStorage.isExists(filmId)) {
