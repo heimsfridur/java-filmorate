@@ -3,19 +3,20 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.AddException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
-import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
 
 import java.sql.Date;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Set;
@@ -28,8 +29,8 @@ import java.util.Set;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FilmRowMapper filmRowMapper;
-    private final GenreRowMapper genreRowMapper;
     private final GenreDbStorage genreDbStorage;
+    private final DirectorDbStorage directorDbStorage;
 
     @Override
     public List<Film> getAll() {
@@ -74,6 +75,11 @@ public class FilmDbStorage implements FilmStorage {
         Set<Genre> genres = film.getGenres();
         if (genres != null && !genres.isEmpty()) {
             genreDbStorage.setGenresForFilm(film, genres);
+        }
+
+        List<Director> directors = film.getDirectors();
+        if (directors != null && !directors.isEmpty()) {
+            directorDbStorage.setDirectorsForFilm(directors, film.getId());
         }
 
         return film;
@@ -152,5 +158,37 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT COUNT(*) " +
                 "FROM films_likes WHERE film_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, film.getId());
+    }
+
+    @Override
+    public List<Film> getFilmsOfDirectorByLikesSorting(int directorId) {
+        String sql = "SELECT films.*, MPA.* " +
+                "FROM films_directors " +
+                "LEFT JOIN films ON films.film_id = films_directors.film_id " +
+                "LEFT JOIN films_likes ON films_likes.film_id = films_directors.film_id " +
+                "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id " +
+                "WHERE director_id =? " +
+                "GROUP BY films.film_id " +
+                "ORDER BY COUNT(films_likes.user_id) DESC ";
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
+        genreDbStorage.loadGenresForFilms(films);
+        directorDbStorage.loadDirectorsForFilms(films);
+
+
+        return films;
+    }
+
+    @Override
+    public List<Film> getFilmsOfDirectorByYearSorting(int directorId) {
+        String sql = "SELECT films.*, MPA.* " +
+                "FROM films_directors " +
+                "LEFT JOIN films ON films.film_id = films_directors.film_id " +
+                "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id " +
+                "WHERE director_id =? " +
+                "ORDER BY films.film_releaseDate ";
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
+        genreDbStorage.loadGenresForFilms(films);
+        directorDbStorage.loadDirectorsForFilms(films);
+        return films;
     }
 }

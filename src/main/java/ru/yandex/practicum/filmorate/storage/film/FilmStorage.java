@@ -24,4 +24,8 @@ public interface FilmStorage {
     public boolean isExists(int filmId);
 
     public int getAmountOfLikes(Film film);
+
+    public List<Film> getFilmsOfDirectorByLikesSorting(int directorId);
+
+    public List<Film> getFilmsOfDirectorByYearSorting(int directorId);
 }

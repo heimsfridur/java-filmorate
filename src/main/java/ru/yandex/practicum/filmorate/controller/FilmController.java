@@ -57,8 +57,14 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(defaultValue = "10")
-                                           @Positive(message = "Amount of films must be positive") Integer count) {
+                                       @Positive(message = "Amount of films must be positive") Integer count) {
         log.info(String.format("Received a request to get top %d films", count));
         return filmService.getPopular(count);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable(required = false) Integer directorId, @RequestParam(required = false, name = "sortBy") String paramSort) {
+        log.info(String.format("Received films of director with id %s by %s sort", directorId, paramSort));
+        return filmService.getFilmsOfDirectorBySort(directorId, paramSort);
     }
 }

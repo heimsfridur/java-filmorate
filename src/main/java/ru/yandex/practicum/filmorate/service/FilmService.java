@@ -12,7 +12,9 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.security.InvalidParameterException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -39,10 +41,8 @@ public class FilmService {
         }
 
         Set<Genre> genres = film.getGenres();
-        if (genres != null) {
-            if (!genreStorage.allGenresExist(genres)) {
-                throw new ValidationException("Not all genres exist.");
-            }
+        if (genres != null && (!genreStorage.allGenresExist(genres))) {
+            throw new ValidationException("Not all genres exist.");
         }
 
         log.info(String.format("Film with name %s was added with ID %d.", film.getName(), film.getId()));
@@ -90,5 +90,15 @@ public class FilmService {
             throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
         }
         return filmStorage.update(newFilm);
+    }
+
+    public List<Film> getFilmsOfDirectorBySort(Integer directorId, String paramSort) {
+        if (paramSort.equalsIgnoreCase("year")) {
+            return filmStorage.getFilmsOfDirectorByYearSorting(directorId);
+        }
+        if (paramSort.equalsIgnoreCase("likes")) {
+            return filmStorage.getFilmsOfDirectorByLikesSorting(directorId);
+        }
+        throw new InvalidParameterException("Unknown sorting parameter passed: " + paramSort);
     }
 }
