@@ -58,4 +58,16 @@ public class UserController {
         log.info(String.format("Received a request to get common friends for users %d and %d", id, otherId));
         return userService.getCommonFriends(id, otherId);
     }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Integer id) {
+        log.info(String.format("Received a request to get get User with id %d", id));
+        return userService.getUserById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Integer id) {
+        log.info(String.format("Received a request to delete user with id = %d", id));
+        userService.deleteUser(id);
+    }
 }

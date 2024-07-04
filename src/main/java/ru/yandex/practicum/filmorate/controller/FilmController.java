@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -57,14 +58,26 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(defaultValue = "10")
-                                       @Positive(message = "Amount of films must be positive") Integer count) {
+                                           @Positive(message = "Amount of films must be positive") Integer count) {
         log.info(String.format("Received a request to get top %d films", count));
         return filmService.getPopular(count);
     }
 
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
+        log.info("Received a request to get list of common films by users {} and {}", userId, friendId);
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
     @GetMapping("/director/{directorId}")
-    public Collection<Film> getFilmsByDirector(@PathVariable(required = false) Integer directorId, @RequestParam(required = false, name = "sortBy") String paramSort) {
+    public List<Film> getFilmsByDirector(@PathVariable(required = false) Integer directorId, @RequestParam(required = false, name = "sortBy") String paramSort) {
         log.info(String.format("Received films of director with id %s by %s sort", directorId, paramSort));
         return filmService.getFilmsOfDirectorBySort(directorId, paramSort);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable Integer id) {
+        log.info(String.format("Received a request to delete film with id = %d", id));
+        filmService.deleteById(id);
     }
 }

@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.AddException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -15,8 +15,8 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Set;
@@ -158,6 +158,28 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT COUNT(*) " +
                 "FROM films_likes WHERE film_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, film.getId());
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT f.*, m.mpa_id, m.mpa_name, COUNT(fl.user_id) AS likes " +
+                "FROM films f " +
+                "JOIN films_likes fl ON f.film_id = fl.film_id " +
+                "JOIN mpa m ON f.film_mpa = m.mpa_id " +
+                "WHERE fl.user_id IN (?, ?) " +
+                "GROUP BY f.film_id, m.mpa_id " +
+                "HAVING COUNT(DISTINCT fl.user_id) = 2 " +
+                "ORDER BY likes DESC";
+
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, userId, friendId);
+        genreDbStorage.loadGenresForFilms(films);
+
+        return films;
+    }
+
+    public void deleteById(int filmId) {
+        String sql = "DELETE FROM films WHERE film_id = ? ";
+        jdbcTemplate.update(sql, filmId);
     }
 
     @Override

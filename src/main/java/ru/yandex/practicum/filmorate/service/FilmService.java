@@ -31,6 +31,9 @@ public class FilmService {
     }
 
     public Film getById(int id) {
+        if (!filmStorage.isExists(id)) {
+            throw new NotFoundException(String.format("Film with ID %d does not exist.", id));
+        }
         return filmStorage.getById(id);
     }
 
@@ -41,8 +44,10 @@ public class FilmService {
         }
 
         Set<Genre> genres = film.getGenres();
-        if (genres != null && (!genreStorage.allGenresExist(genres))) {
-            throw new ValidationException("Not all genres exist.");
+        if (genres != null) {
+            if (!genreStorage.allGenresExist(genres)) {
+                throw new ValidationException("Not all genres exist.");
+            }
         }
 
         log.info(String.format("Film with name %s was added with ID %d.", film.getName(), film.getId()));
@@ -92,6 +97,18 @@ public class FilmService {
         return filmStorage.update(newFilm);
     }
 
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        checkUserId(userId);
+        checkUserId(friendId);
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    private void checkUserId(int userId) {
+        if (!userStorage.isExists(userId)) {
+            throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
+        }
+    }
+
     public List<Film> getFilmsOfDirectorBySort(Integer directorId, String paramSort) {
         if (paramSort.equalsIgnoreCase("year")) {
             return filmStorage.getFilmsOfDirectorByYearSorting(directorId);
@@ -100,5 +117,13 @@ public class FilmService {
             return filmStorage.getFilmsOfDirectorByLikesSorting(directorId);
         }
         throw new InvalidParameterException("Unknown sorting parameter passed: " + paramSort);
+    }
+
+    public void deleteById(int filmId) {
+        if (!filmStorage.isExists(filmId)) {
+            log.warn(String.format("There is no film with id %d", filmId));
+            throw new NotFoundException(String.format("Film with ID %d does not exist.", filmId));
+        }
+        filmStorage.deleteById(filmId);
     }
 }
