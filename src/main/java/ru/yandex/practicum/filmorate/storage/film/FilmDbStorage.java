@@ -175,4 +175,44 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "DELETE FROM films WHERE film_id = ? ";
         jdbcTemplate.update(sql, filmId);
     }
+
+    @Override
+    public List<Film> getRecommendations(int userId) {
+        String sql = """
+                       SELECT fl.film_id,
+                       fl.film_name,
+                       fl.film_description,
+                       fl.film_releaseDate,
+                       fl.film_duration,
+                       m.mpa_id AS rating_id,
+                       m.mpa_name AS rating_name,
+                       g.genre_id AS genre_id,
+                       g.genre_name AS genre_name,
+                       d.director_id AS director_id,
+                       d.director_name AS director_name
+                FROM films_likes flk
+                JOIN films fl ON flk.film_id = fl.film_id
+                LEFT JOIN mpa m ON m.mpa_id = fl.film_mpa
+                LEFT JOIN films_genres fg ON fl.film_id = fg.film_id
+                LEFT JOIN genres g ON g.genre_id = fg.genre_id
+                LEFT JOIN films_directors fd ON fl.film_id = fd.film_id
+                LEFT JOIN directors d ON d.director_id = fd.director_id
+                WHERE flk.user_id IN (
+                    SELECT flk2.user_id
+                    FROM films_likes flk2
+                    WHERE flk2.film_id IN (
+                        SELECT flk3.film_id
+                        FROM films_likes flk3
+                        WHERE flk3.user_id = ?)
+                        AND flk2.user_id <> ?
+                    GROUP BY flk2.user_id
+                    ORDER BY COUNT(*) DESC
+                    LIMIT 1)
+                AND flk.film_id NOT IN (
+                    SELECT flk4.film_id
+                    FROM films_likes flk4
+                    WHERE flk4.user_id = ?)
+                """;
+        return jdbcTemplate.query(sql, filmRowMapper, userId, userId, userId);
+    }
 }
