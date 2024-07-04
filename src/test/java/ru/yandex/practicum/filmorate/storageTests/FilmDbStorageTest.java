@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -129,5 +130,31 @@ public class FilmDbStorageTest {
         int likesAmount = filmStorage.getAmountOfLikes(film);
 
         assertEquals(0, likesAmount, "Like was not deleted.");
+    }
+
+    @Test
+    @Sql(scripts = {"/test-data.sql"})
+    @DirtiesContext
+    public void testGetCommonFilms() {
+        filmStorage.addLikeToFilm(1, 1);
+        filmStorage.addLikeToFilm(1, 2);
+        filmStorage.addLikeToFilm(2, 1);
+        filmStorage.addLikeToFilm(2, 2);
+        List<Film> commonFilms = filmStorage.getCommonFilms(1, 2);
+
+        assertEquals(2, commonFilms.size(), "The amount of common films is incorrect.");
+        assertThat(commonFilms.get(0)).hasFieldOrPropertyWithValue("id", 1);
+        assertThat(commonFilms.get(1)).hasFieldOrPropertyWithValue("id", 2);
+    }
+
+    @Test
+    @Sql(scripts = {"/test-data.sql"})
+    @DirtiesContext
+    public void testGetRecommendationsForUser() {
+        filmStorage.addLikeToFilm(1, 1);
+        filmStorage.addLikeToFilm(1, 2);
+        List<Film> recommendations = filmStorage.getRecommendations(3);
+
+        assertNotNull(recommendations);
     }
 }
