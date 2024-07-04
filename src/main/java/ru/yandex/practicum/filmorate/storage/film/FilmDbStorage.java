@@ -177,6 +177,7 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
+    @Override
     public void deleteById(int filmId) {
         String sql = "DELETE FROM films WHERE film_id = ? ";
         jdbcTemplate.update(sql, filmId);
@@ -212,6 +213,7 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
+    @Override
     public List<Film> getRecommendations(int userId) {
         String sql = """
                        SELECT fl.film_id,
