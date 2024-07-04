@@ -10,8 +10,10 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.annotations.ValidReleaseDate;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Film.
@@ -40,4 +42,6 @@ public class Film {
     private Mpa mpa;
 
     private Set<Genre> genres = new HashSet<>();
+
+    private List<Director> directors = Collections.emptyList();
 }

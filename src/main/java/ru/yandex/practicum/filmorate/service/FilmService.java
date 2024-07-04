@@ -12,7 +12,9 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.security.InvalidParameterException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -105,6 +107,16 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
+    }
+
+    public List<Film> getFilmsOfDirectorBySort(Integer directorId, String paramSort) {
+        if (paramSort.equalsIgnoreCase("year")) {
+            return filmStorage.getFilmsOfDirectorByYearSorting(directorId);
+        }
+        if (paramSort.equalsIgnoreCase("likes")) {
+            return filmStorage.getFilmsOfDirectorByLikesSorting(directorId);
+        }
+        throw new InvalidParameterException("Unknown sorting parameter passed: " + paramSort);
     }
 
     public void deleteById(int filmId) {
