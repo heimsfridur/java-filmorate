@@ -159,6 +159,7 @@ public class FilmDbStorage implements FilmStorage {
                 .append("ORDER BY likes_count DESC, films.film_id ")
                 .append("LIMIT ").append(count);
 
+
         List<Film> films = jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
         return films;
     }
