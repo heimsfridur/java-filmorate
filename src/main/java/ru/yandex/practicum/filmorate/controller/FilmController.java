@@ -67,9 +67,11 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(defaultValue = "10")
-                                       @Positive(message = "Amount of films must be positive") Integer count) {
-        log.info(String.format("Received a request to get top %d films", count));
-        return filmService.getPopular(count);
+                                       @Positive(message = "Amount of films must be positive") Integer count,
+                                       @RequestParam(required = false) Integer genreId,
+                                       @RequestParam(required = false) Integer year) {
+        log.info(String.format("Received a request to get top %d films by %d genre and %d year", count, genreId, year));
+        return filmService.getPopular(count, genreId, year);
     }
 
     @GetMapping("/common")
@@ -98,4 +100,5 @@ public class FilmController {
         log.info(String.format("Received a request to GET /search %s by %s", query, by));
         return filmService.searchFilms(query, by);
     }
+
 }

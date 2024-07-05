@@ -84,8 +84,8 @@ public class FilmService {
         filmStorage.deleteLikeFromFilm(filmId, userId);
     }
 
-    public Collection<Film> getPopular(int count) {
-        return filmStorage.getPopular(count);
+    public Collection<Film> getPopular(int count, Integer genre, Integer year) {
+        return filmStorage.getPopular(count, genre, year);
     }
 
     public Film update(Film newFilm) {

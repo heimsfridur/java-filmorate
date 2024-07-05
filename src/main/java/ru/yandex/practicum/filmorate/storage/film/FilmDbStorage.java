@@ -139,18 +139,46 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(int count) {
-        String sql = "SELECT films.* , MPA.* " +
-                "FROM films LEFT JOIN films_likes ON films.film_id = films_likes.film_id " +
-                "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id " +
-                "GROUP BY films.film_id " +
-                "ORDER BY COUNT(films_likes.user_id) DESC " +
-                "LIMIT ?";
-        List<Film> topFilms = jdbcTemplate.query(sql, filmRowMapper, count);
+    public List<Film> getPopular(int count, Integer genre, Integer year) {
+//        String sql = "SELECT films.* , MPA.* " +
+//                "FROM films LEFT JOIN films_likes ON films.film_id = films_likes.film_id " +
+//                "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id " +
+//                "GROUP BY films.film_id " +
+//                "ORDER BY COUNT(films_likes.user_id) DESC " +
+//                "LIMIT ?";
+//        List<Film> topFilms = jdbcTemplate.query(sql, filmRowMapper, count);
+//
+//        genreDbStorage.loadGenresForFilms(topFilms);
+//
+//        return topFilms;
+        StringBuilder sqlQuery = new StringBuilder(
+                "SELECT films.*, mpa.*, COUNT(films_likes.user_id) AS likes_count " +
+                        "FROM films " +
+                        "LEFT JOIN films_likes ON films.film_id = films_likes.film_id " +
+                        "LEFT JOIN mpa ON films.film_mpa = mpa.mpa_id " +
+                        "LEFT JOIN films_genres ON films.film_id = films_genres.film_id ");
 
-        genreDbStorage.loadGenresForFilms(topFilms);
+        boolean hasCondition = false;
+        if (genre != null) {
+            sqlQuery.append("WHERE films_genres.genre_id = ").append(genre).append(" ");
+            hasCondition = true;
+        }
+        if (year != null) {
+            if (hasCondition) {
+                sqlQuery.append("AND ");
+            } else {
+                sqlQuery.append("WHERE ");
+            }
+            sqlQuery.append("YEAR(films.film_releaseDate) = ").append(year).append(" ");
+        }
 
-        return topFilms;
+        sqlQuery.append("GROUP BY films.film_id ")
+                .append("ORDER BY likes_count DESC, films.film_id ")
+                .append("LIMIT ").append(count);
+
+        List<Film> films = jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
+        //genreDbStorage.loadGenresForFilms(films);
+        return films;
     }
 
     @Override
