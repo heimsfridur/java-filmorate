@@ -37,8 +37,6 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT films.*, mpa.mpa_id, mpa.mpa_name FROM films LEFT JOIN mpa ON films.film_mpa = mpa.mpa_id;";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper);
 
-        genreDbStorage.loadGenresForFilms(films);
-
         log.info("Got all films.");
         return films;
     }
@@ -105,10 +103,6 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id WHERE film_id = ? LIMIT 1";
 
         Film film = jdbcTemplate.queryForObject(sql, filmRowMapper, id);
-
-        genreDbStorage.loadGenresForFilms(List.of(film));
-
-
         return film;
     }
 
@@ -148,7 +142,6 @@ public class FilmDbStorage implements FilmStorage {
                 "LIMIT ?";
         List<Film> topFilms = jdbcTemplate.query(sql, filmRowMapper, count);
 
-        genreDbStorage.loadGenresForFilms(topFilms);
 
         return topFilms;
     }
@@ -172,7 +165,6 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY likes DESC";
 
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, userId, friendId);
-        genreDbStorage.loadGenresForFilms(films);
 
         return films;
     }
@@ -194,7 +186,7 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY films.film_id " +
                 "ORDER BY COUNT(films_likes.user_id) DESC ";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        genreDbStorage.loadGenresForFilms(films);
+        //genreDbStorage.loadGenresForFilms(films);
         return films;
     }
 
@@ -207,7 +199,6 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE director_id =? " +
                 "ORDER BY films.film_releaseDate ";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        genreDbStorage.loadGenresForFilms(films);
         return films;
     }
 
