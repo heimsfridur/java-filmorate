@@ -11,7 +11,10 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.mapper.DirectorRowMapper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -104,7 +107,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public void setDirectorsForFilm(List<Director> directors, int filmId) {
         directors.forEach(director ->
                 jdbcTemplate.execute(String.format("MERGE INTO films_directors (film_id, director_id) " +
-                "VALUES (%d, %d)", filmId, director.getId())));
+                        "VALUES (%d, %d)", filmId, director.getId())));
 
     }
 
@@ -113,7 +116,7 @@ public class DirectorDbStorage implements DirectorStorage {
         final Map<Integer, Film> filmById = films.stream()
                 .collect(Collectors.toMap(Film::getId, identity()));
         String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
-        final String sqlQuery =  "SELECT fd.*, d.* " +
+        final String sqlQuery = "SELECT fd.*, d.* " +
                 "FROM directors d " +
                 "JOIN films_directors fd ON d.director_id = fd.director_id " +
                 "WHERE fd.film_id IN (" + inSql + ")";
@@ -133,6 +136,14 @@ public class DirectorDbStorage implements DirectorStorage {
                     return film;
                 },
                 films.stream().map(Film::getId).toArray());
+    }
+
+    @Override
+    public List<Director> getDirectorListFromFilm(Integer filmId) {
+        String sql = "SELECT fd.*, d.director_name\n" +
+                "FROM films_directors AS fd JOIN directors AS d ON d.director_id = fd.director_id\n" +
+                "WHERE fd.film_id = ?";
+        return jdbcTemplate.query(sql, mapper, filmId);
     }
 
 

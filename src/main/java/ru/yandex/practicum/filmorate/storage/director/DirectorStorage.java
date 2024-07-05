@@ -22,4 +22,6 @@ public interface DirectorStorage {
     void setDirectorsForFilm(List<Director> directors, int filmId);
 
     void loadDirectorsForFilms(List<Film> films);
+
+    List<Director> getDirectorListFromFilm(Integer filmId);
 }

@@ -126,4 +126,8 @@ public class FilmService {
         }
         filmStorage.deleteById(filmId);
     }
+
+    public List<Film> searchFilms(String query, String by) {
+        return filmStorage.searchFilms(query, by);
+    }
 }

@@ -18,4 +18,6 @@ public interface GenreStorage {
     public boolean isExist(int genreId);
 
     public boolean allGenresExist(Set<Genre> genres);
+
+    List<Genre> getGenresListForFilm(Integer filmId);
 }
