@@ -46,8 +46,8 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Exception e) {
-        log.debug("Received status 500 INTERNAL SERVER ERROR {}", e.getMessage(), e);
-        return new ErrorResponse("Unexpected error");
+        log.debug("Received status 500 INTERNAL SERVER ERROR {}. ", e.getMessage(), e);
+        return new ErrorResponse("Unexpected error" + e.getMessage());
     }
 
 }
