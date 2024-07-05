@@ -9,7 +9,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 //@Import({FilmDbStorage.class, FilmRowMapper.class, GenreRowMapper.class})
 public class FilmDbStorageTest {
     private final FilmStorage filmStorage;
+    private final DirectorStorage directorStorage;
+    private final MpaStorage mpaStorage;
 
     @Test
     @Sql(scripts = {"/test-data.sql"})
@@ -51,11 +55,16 @@ public class FilmDbStorageTest {
     @Test
     @DirtiesContext
     public void shouldAddFilmTest() {
+
+
+        Mpa mpa = Mpa.builder().id(1).name("G").build();
         Film film = Film.builder()
                 .name("film1")
                 .description("descr1")
                 .releaseDate(LocalDate.of(2024, 10, 11))
                 .duration(150)
+                .mpa(mpa)
+                .directors(directorStorage.getDirectorListFromFilm(1))
                 .build();
 
         Film savedFilm = filmStorage.add(film);
