@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.AddException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -15,8 +15,8 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
 
 import java.sql.Date;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 import java.util.Set;
@@ -36,8 +36,6 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getAll() {
         String sql = "SELECT films.*, mpa.mpa_id, mpa.mpa_name FROM films LEFT JOIN mpa ON films.film_mpa = mpa.mpa_id;";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper);
-
-        genreDbStorage.loadGenresForFilms(films);
 
         log.info("Got all films.");
         return films;
@@ -105,10 +103,6 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id WHERE film_id = ? LIMIT 1";
 
         Film film = jdbcTemplate.queryForObject(sql, filmRowMapper, id);
-
-        genreDbStorage.loadGenresForFilms(List.of(film));
-
-
         return film;
     }
 
@@ -148,7 +142,6 @@ public class FilmDbStorage implements FilmStorage {
                 "LIMIT ?";
         List<Film> topFilms = jdbcTemplate.query(sql, filmRowMapper, count);
 
-        genreDbStorage.loadGenresForFilms(topFilms);
 
         return topFilms;
     }
@@ -172,7 +165,6 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY likes DESC";
 
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, userId, friendId);
-        genreDbStorage.loadGenresForFilms(films);
 
         return films;
     }
@@ -194,8 +186,6 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY films.film_id " +
                 "ORDER BY COUNT(films_likes.user_id) DESC ";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        genreDbStorage.loadGenresForFilms(films);
-        directorDbStorage.loadDirectorsForFilms(films);
         return films;
     }
 
@@ -208,8 +198,6 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE director_id =? " +
                 "ORDER BY films.film_releaseDate ";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        genreDbStorage.loadGenresForFilms(films);
-        directorDbStorage.loadDirectorsForFilms(films);
         return films;
     }
 
@@ -251,5 +239,30 @@ public class FilmDbStorage implements FilmStorage {
                     WHERE flk4.user_id = ?)
                 """;
         return jdbcTemplate.query(sql, filmRowMapper, userId, userId, userId);
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, String by) {
+        StringBuilder sql = new StringBuilder("SELECT films.* "
+                + "FROM films "
+                + "LEFT JOIN films_likes ON films.film_id = films_likes.film_id "
+                + "LEFT JOIN MPA ON MPA.mpa_id = films.film_mpa "
+                + "LEFT JOIN films_directors ON films.film_id = films_directors.film_id "
+                + "LEFT JOIN directors ON films_directors.director_id = directors.director_id ");
+        switch (by) {
+            case ("title"):
+                sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
+                break;
+            case ("director"):
+                sql.append("WHERE LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
+                break;
+            case ("title,director"), ("director,title"):
+                sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
+                sql.append("OR LOWER(directors.director_name) LIKE LOWER('%").append(query).append("%') ");
+                break;
+        }
+        sql.append("GROUP BY films.film_id, films_likes.film_id " + "ORDER BY COUNT(films_likes.film_id) DESC");
+        String sqlQuery = sql.toString();
+        return jdbcTemplate.query(sqlQuery, filmRowMapper);
     }
 }

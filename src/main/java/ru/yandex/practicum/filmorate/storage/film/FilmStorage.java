@@ -34,4 +34,6 @@ public interface FilmStorage {
     List<Film> getFilmsOfDirectorByYearSorting(int directorId);
 
     List<Film> getRecommendations(int userId);
+
+    List<Film> searchFilms(String query, String by);
 }
