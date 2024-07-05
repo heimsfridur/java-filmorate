@@ -186,7 +186,6 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY films.film_id " +
                 "ORDER BY COUNT(films_likes.user_id) DESC ";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        //genreDbStorage.loadGenresForFilms(films);
         return films;
     }
 
