@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class EventDbStorage implements EventStorage{
+public class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
