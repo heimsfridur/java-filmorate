@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventService {
 
-    final private EventStorage eventStorage;
+    private final EventStorage eventStorage;
 
 
     public List<Event> getFeed(int userId) {
