@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -17,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+    private final EventService eventService;
     private final FilmStorage filmStorage;
 
     public Collection<User> getAll() {
@@ -58,6 +61,7 @@ public class UserService {
 
         userStorage.addFriend(userId, friendId);
         log.info(String.format("Users %d and %d are friends now!", userId, friendId));
+        eventService.createEvent(userId, EventType.FRIEND, EventOperation.ADD, friendId);
     }
 
     public void deleteFriend(int userId, int friendId) {
@@ -74,6 +78,7 @@ public class UserService {
 
         userStorage.deleteFriend(userId, friendId);
         log.info(String.format("Users %d and %d are not friends now :(", userId, friendId));
+        eventService.createEvent(userId, EventType.FRIEND, EventOperation.REMOVE, friendId);
     }
 
     public List<User> getFriendsOfUser(int userId) {
@@ -86,7 +91,7 @@ public class UserService {
 
     public List<User> getCommonFriends(int userId, int otherId) {
         if (!userStorage.isExists(userId) || !userStorage.isExists(otherId)) {
-            throw new NotFoundException(String.format("User with ID %d or %id does not exist.", userId, otherId));
+            throw new NotFoundException(String.format("User with ID %d or %d does not exist.", userId, otherId));
         }
 
         return userStorage.getCommonFriends(userId, otherId);
