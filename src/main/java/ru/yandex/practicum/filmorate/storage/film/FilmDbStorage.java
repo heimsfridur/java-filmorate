@@ -18,6 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,9 +96,12 @@ public class FilmDbStorage implements FilmStorage {
                 newFilm.getDuration(), newFilm.getMpa().getId(), filmId);
 
         updateGenres(newFilm);
-
+        updateDirectors(newFilm);
         Set<Genre> updatedGenres = new HashSet<>(genreDbStorage.getGenresListForFilm(filmId));
         newFilm.setGenres(updatedGenres);
+
+        List<Director> updatedDirectors = new ArrayList<>(directorDbStorage.getDirectorListFromFilm(filmId));
+        newFilm.setDirectors(updatedDirectors);
 
         log.info(String.format("Film with id %d was updated", filmId));
         return newFilm;
@@ -112,6 +116,19 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update(sqlDelQuery, film.getId());
             genreDbStorage.setGenresForFilm(film, genres);
         } else if (genres.isEmpty()) {
+            jdbcTemplate.update(sqlDelQuery, film.getId());
+        }
+    }
+
+    private void updateDirectors(Film film) {
+        List<Director> directors = film.getDirectors();
+        String sqlDelQuery = "DELETE " +
+                "FROM films_directors " +
+                "WHERE film_id = ?";
+        if (directors != null && !directors.isEmpty()) {
+            jdbcTemplate.update(sqlDelQuery, film.getId());
+            directorDbStorage.setDirectorsForFilm(directors, film.getId());
+        } else if (directors.isEmpty()) {
             jdbcTemplate.update(sqlDelQuery, film.getId());
         }
     }
