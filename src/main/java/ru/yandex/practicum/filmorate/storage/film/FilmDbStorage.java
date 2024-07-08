@@ -108,7 +108,7 @@ public class FilmDbStorage implements FilmStorage {
     public void updateGenres (Film film) {
         Set<Genre> genres = film.getGenres();
         String sqlDelQuery = "DELETE " +
-                "FROM genre " +
+                "FROM films_genres " +
                 "WHERE film_id = ?";
         if (genres != null && !genres.isEmpty()) {
             jdbcTemplate.update(sqlDelQuery, film.getId());
