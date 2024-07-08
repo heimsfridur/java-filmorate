@@ -2,13 +2,16 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
@@ -28,6 +31,7 @@ public class FilmService {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
     private final EventService eventService;
+    private final DirectorStorage directorStorage;
 
     public Collection<Film> getAll() {
         return filmStorage.getAll();
@@ -115,6 +119,9 @@ public class FilmService {
     }
 
     public List<Film> getFilmsOfDirectorBySort(Integer directorId, String paramSort) {
+        if (directorStorage.getDirectorById(directorId) == null) {
+            throw new ResponseStatusException(HttpStatus.valueOf(404), "Director not found!");
+        }
         if (paramSort.equalsIgnoreCase("year")) {
             return filmStorage.getFilmsOfDirectorByYearSorting(directorId);
         }
