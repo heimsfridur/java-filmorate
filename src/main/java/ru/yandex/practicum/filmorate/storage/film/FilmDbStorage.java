@@ -92,8 +92,30 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbcTemplate.update(sql, newFilm.getName(), newFilm.getDescription(), newFilm.getReleaseDate(),
                 newFilm.getDuration(), newFilm.getMpa().getId(), filmId);
+
+        updateGenres(newFilm);
+
+//        List<Director> directors = newFilm.getDirectors();
+//        if (directors != null && !directors.isEmpty()) {
+//            directorDbStorage.setDirectorsForFilm(directors, newFilm.getId());
+//        }
+
+
         log.info(String.format("Film with id %d was updated", filmId));
         return newFilm;
+    }
+
+    public void updateGenres (Film film) {
+        Set<Genre> genres = film.getGenres();
+        String sqlDelQuery = "DELETE " +
+                "FROM genre " +
+                "WHERE film_id = ?";
+        if (genres != null && !genres.isEmpty()) {
+            jdbcTemplate.update(sqlDelQuery, film.getId());
+            genreDbStorage.setGenresForFilm(film, genres);
+        } else if (genres.isEmpty()) {
+            jdbcTemplate.update(sqlDelQuery, film.getId());
+        }
     }
 
     @Override
