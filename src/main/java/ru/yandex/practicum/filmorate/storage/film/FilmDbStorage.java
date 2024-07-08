@@ -18,6 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -95,17 +96,14 @@ public class FilmDbStorage implements FilmStorage {
 
         updateGenres(newFilm);
 
-//        List<Director> directors = newFilm.getDirectors();
-//        if (directors != null && !directors.isEmpty()) {
-//            directorDbStorage.setDirectorsForFilm(directors, newFilm.getId());
-//        }
-
+        Set<Genre> updatedGenres = new HashSet<>(genreDbStorage.getGenresListForFilm(filmId));
+        newFilm.setGenres(updatedGenres);
 
         log.info(String.format("Film with id %d was updated", filmId));
         return newFilm;
     }
 
-    public void updateGenres (Film film) {
+    public void updateGenres(Film film) {
         Set<Genre> genres = film.getGenres();
         String sqlDelQuery = "DELETE " +
                 "FROM films_genres " +

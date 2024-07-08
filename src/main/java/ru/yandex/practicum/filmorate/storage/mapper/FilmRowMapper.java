@@ -14,9 +14,7 @@ import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +36,5 @@ public class FilmRowMapper implements RowMapper<Film> {
         Set<Genre> genres = new HashSet<>(genreStorage.getGenresListForFilm(id));
         List<Director> directors = directorStorage.getDirectorListFromFilm(id);
         return rs.wasNull() ? null : new Film(id, name, description, releaseDate, duration, mpa, genres, directors);
-
     }
 }
