@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,7 +95,7 @@ public class GenreDbStorage implements GenreStorage {
                     Genre genre = genreRowMapper.mapRow(rs, rowNum);
                     log.debug("genre {} ", genre);
                     if (film.getGenres() == null) {
-                        film.setGenres(new HashSet<>());
+                        film.setGenres(new LinkedHashSet<>());
                     }
                     film.getGenres().add(genre);
                     return film;

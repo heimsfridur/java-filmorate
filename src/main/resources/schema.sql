@@ -51,8 +51,7 @@ create unique index if not exists USER_LOGIN_UINDEX on USERS (user_login);
 
 CREATE TABLE IF NOT EXISTS  films_likes (
   film_id INTEGER REFERENCES films(film_id) ON DELETE CASCADE ON UPDATE CASCADE,
-  user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
-  PRIMARY KEY(film_id, user_id)
+  user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS friends (
