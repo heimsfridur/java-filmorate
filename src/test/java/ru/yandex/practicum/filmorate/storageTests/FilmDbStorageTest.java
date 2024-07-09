@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -91,6 +92,12 @@ public class FilmDbStorageTest {
                 .id(1)
                 .name("G")
                 .build();
+        Genre genre = Genre.builder()
+                .id(1)
+                .name("Комедия")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre);
 
         Film newFilm = Film.builder()
                 .id(1)
@@ -99,6 +106,8 @@ public class FilmDbStorageTest {
                 .releaseDate(LocalDate.of(2024, 10, 11))
                 .duration(150)
                 .mpa(mpa)
+                .genres(genres)
+                .directors(directorStorage.getDirectorListFromFilm(1))
                 .build();
         filmStorage.update(newFilm);
 
