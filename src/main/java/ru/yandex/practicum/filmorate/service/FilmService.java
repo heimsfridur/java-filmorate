@@ -68,10 +68,6 @@ public class FilmService {
         if (!userStorage.isExists(userId)) {
             throw new NotFoundException(String.format("User with ID %d does not exist.", userId));
         }
-        if (filmStorage.isFilmLikedByUser(filmId, userId)) {
-            throw new IllegalArgumentException(String.format("User with ID %d has already liked film with ID %d",
-                    userId, filmId));
-        }
 
         filmStorage.addLikeToFilm(filmId, userId);
         eventService.createEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
