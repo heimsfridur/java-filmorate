@@ -14,7 +14,8 @@ import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class FilmRowMapper implements RowMapper<Film> {
         LocalDate releaseDate = rs.getDate("film_releaseDate").toLocalDate();
         Integer duration = rs.getInt("film_duration");
         Mpa mpa = mpaStorage.getMpaById(rs.getInt("film_mpa"));
-        Set<Genre> genres = new HashSet<>(genreStorage.getGenresListForFilm(id));
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresListForFilm(id));
         List<Director> directors = directorStorage.getDirectorListFromFilm(id);
         return rs.wasNull() ? null : new Film(id, name, description, releaseDate, duration, mpa, genres, directors);
     }

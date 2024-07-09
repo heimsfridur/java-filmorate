@@ -19,7 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -97,7 +97,7 @@ public class FilmDbStorage implements FilmStorage {
 
         updateGenres(newFilm);
         updateDirectors(newFilm);
-        Set<Genre> updatedGenres = new HashSet<>(genreDbStorage.getGenresListForFilm(filmId));
+        LinkedHashSet<Genre> updatedGenres = new LinkedHashSet<>(genreDbStorage.getGenresListForFilm(filmId));
         newFilm.setGenres(updatedGenres);
 
         List<Director> updatedDirectors = new ArrayList<>(directorDbStorage.getDirectorListFromFilm(filmId));
