@@ -57,6 +57,7 @@ public class ReviewDbStorage implements ReviewStorage {
         Review oldReview = getById(id);
         newReview.setUserId(oldReview.getUserId());
         newReview.setFilmId(oldReview.getFilmId());
+        newReview.setUseful(oldReview.getUseful());
 
         jdbcTemplate.update(sql, newReview.getContent(), newReview.getIsPositive(),
                 newReview.getUseful(), id);
