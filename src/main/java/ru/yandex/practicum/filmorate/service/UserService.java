@@ -113,7 +113,7 @@ public class UserService {
 
     public Collection<Film> getRecommendations(int userId) {
         checkUserId(userId);
-        return filmStorage.getRecommendations(userId);
+        return filmStorage.getRecommendations(userId).stream().distinct().toList();
     }
 
     private void checkUserId(int userId) {
