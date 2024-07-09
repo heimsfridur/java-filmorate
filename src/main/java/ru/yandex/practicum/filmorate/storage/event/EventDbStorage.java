@@ -34,6 +34,6 @@ public class EventDbStorage implements EventStorage {
                 event.getEventType().name(),
                 event.getOperation().name(),
                 event.getEntityId()
-                );
+        );
     }
 }
