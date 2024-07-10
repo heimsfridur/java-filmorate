@@ -70,17 +70,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getDirectors() {
-        List<Director> directorList = new ArrayList<>();
-        jdbcTemplate.query("SELECT * FROM directors", rs -> {
-
-            do {
-                Director director = mapper.mapRow(rs, rs.getRow());
-                if (director != null) {
-                    directorList.add(director);
-                }
-            } while (rs.next());
-        });
-        return directorList;
+        return jdbcTemplate.query("select * from DIRECTORS", mapper);
     }
 
     @Override
