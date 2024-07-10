@@ -36,7 +36,8 @@ public class DirectorDbStorage implements DirectorStorage {
                 .usingGeneratedKeyColumns("director_id");
         try {
             int directorId = simpleJdbcInsert.executeAndReturnKey(mapper.directorToMap(director)).intValue();
-            return getDirectorById(directorId);
+            director.setId(directorId);
+            return director;
         } catch (Exception e) {
             throw new AddException(e.getMessage());
         }
@@ -69,17 +70,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getDirectors() {
-        List<Director> directorList = new ArrayList<>();
-        jdbcTemplate.query("SELECT * FROM directors", rs -> {
-
-            do {
-                Director director = mapper.mapRow(rs, rs.getRow());
-                if (director != null) {
-                    directorList.add(director);
-                }
-            } while (rs.next());
-        });
-        return directorList;
+        return jdbcTemplate.query("select * from DIRECTORS", mapper);
     }
 
     @Override
@@ -140,9 +131,10 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getDirectorListFromFilm(Integer filmId) {
-        String sql = "SELECT fd.*, d.director_name\n" +
-                "FROM films_directors AS fd JOIN directors AS d ON d.director_id = fd.director_id\n" +
-                "WHERE fd.film_id = ?";
+        String sql = """
+                SELECT fd.*, d.director_name
+                FROM films_directors AS fd JOIN directors AS d ON d.director_id = fd.director_id
+                WHERE fd.film_id = ?""";
         return jdbcTemplate.query(sql, mapper, filmId);
     }
 

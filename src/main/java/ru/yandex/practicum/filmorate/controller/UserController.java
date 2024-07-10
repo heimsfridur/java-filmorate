@@ -49,37 +49,37 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Received a request to add friend.");
         userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Received a request to delete friend");
         userService.deleteFriend(id, friendId);
     }
 
     @GetMapping("{id}/friends")
-    public List<User> getFriendsOfUser(@PathVariable Integer id) {
+    public List<User> getFriendsOfUser(@PathVariable int id) {
         log.info(String.format("Received a request to get friends of user with id %d", id));
         return userService.getFriendsOfUser(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
         log.info(String.format("Received a request to get common friends for users %d and %d", id, otherId));
         return userService.getCommonFriends(id, otherId);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Integer id) {
+    public User getUserById(@PathVariable int id) {
         log.info(String.format("Received a request to get get User with id %d", id));
         return userService.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Integer id) {
+    public void deleteUser(@PathVariable int id) {
         log.info(String.format("Received a request to delete user with id = %d", id));
         userService.deleteUser(id);
     }
@@ -91,7 +91,7 @@ public class UserController {
 
     @GetMapping("/{id}/recommendations")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<Film> getRecommendations(@PathVariable Integer id) {
+    public Collection<Film> getRecommendations(@PathVariable int id) {
         log.info(String.format("Received a request to get recommendations for user with id %d", id));
         return userService.getRecommendations(id);
     }

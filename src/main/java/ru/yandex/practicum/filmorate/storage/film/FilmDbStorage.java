@@ -10,9 +10,11 @@ import ru.yandex.practicum.filmorate.exceptions.AddException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -33,13 +36,14 @@ public class FilmDbStorage implements FilmStorage {
     private final FilmRowMapper filmRowMapper;
     private final GenreDbStorage genreDbStorage;
     private final DirectorDbStorage directorDbStorage;
+    private final MpaStorage mpaStorage;
 
     @Override
     public List<Film> getAll() {
         String sql = "SELECT films.*, mpa.mpa_id, mpa.mpa_name FROM films LEFT JOIN mpa ON films.film_mpa = mpa.mpa_id;";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper);
         log.info("Got all films.");
-        return films;
+        return films.stream().map(this::addMpaGenresDirector).collect(Collectors.toList());
     }
 
     @Override
@@ -80,8 +84,7 @@ public class FilmDbStorage implements FilmStorage {
         if (directors != null && !directors.isEmpty()) {
             directorDbStorage.setDirectorsForFilm(directors, film.getId());
         }
-
-        return film;
+        return addMpaGenresDirector(film);
     }
 
     @Override
@@ -139,7 +142,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN MPA ON films.film_mpa = MPA.mpa_id WHERE film_id = ? LIMIT 1";
 
         Film film = jdbcTemplate.queryForObject(sql, filmRowMapper, id);
-        return film;
+        return addMpaGenresDirector(film);
     }
 
     @Override
@@ -198,7 +201,7 @@ public class FilmDbStorage implements FilmStorage {
 
 
         List<Film> films = jdbcTemplate.query(sqlQuery.toString(), filmRowMapper);
-        return films;
+        return films.stream().map(this::addMpaGenresDirector).collect(Collectors.toList());
     }
 
     @Override
@@ -220,7 +223,7 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY likes DESC";
 
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, userId, friendId);
-        return films;
+        return films.stream().map(this::addMpaGenresDirector).collect(Collectors.toList());
     }
 
     @Override
@@ -240,7 +243,7 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY films.film_id " +
                 "ORDER BY COUNT(films_likes.user_id) DESC ";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        return films;
+        return films.stream().map(this::addMpaGenresDirector).collect(Collectors.toList());
     }
 
     @Override
@@ -252,7 +255,7 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE director_id =? " +
                 "ORDER BY films.film_releaseDate ";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, directorId);
-        return films;
+        return films.stream().map(this::addMpaGenresDirector).collect(Collectors.toList());
     }
 
     @Override
@@ -292,7 +295,10 @@ public class FilmDbStorage implements FilmStorage {
                     FROM films_likes flk4
                     WHERE flk4.user_id = ?)
                 """;
-        return jdbcTemplate.query(sql, filmRowMapper, userId, userId, userId);
+        return jdbcTemplate.query(sql, filmRowMapper, userId, userId, userId)
+                .stream()
+                .map(this::addMpaGenresDirector)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -303,6 +309,7 @@ public class FilmDbStorage implements FilmStorage {
                 + "LEFT JOIN MPA ON MPA.mpa_id = films.film_mpa "
                 + "LEFT JOIN films_directors ON films.film_id = films_directors.film_id "
                 + "LEFT JOIN directors ON films_directors.director_id = directors.director_id ");
+
         switch (by) {
             case ("title"):
                 sql.append("WHERE LOWER(films.film_name) LIKE LOWER('%").append(query).append("%') ");
@@ -317,6 +324,24 @@ public class FilmDbStorage implements FilmStorage {
         }
         sql.append("GROUP BY films.film_id, films_likes.film_id " + "ORDER BY COUNT(films_likes.film_id) DESC");
         String sqlQuery = sql.toString();
-        return jdbcTemplate.query(sqlQuery, filmRowMapper);
+        return jdbcTemplate.query(sqlQuery, filmRowMapper)
+                .stream()
+                .map(this::addMpaGenresDirector)
+                .collect(Collectors.toList());
+    }
+
+    private Film addMpaGenresDirector(Film film) {
+        if (film.getMpa().getName() == null) {
+            int mpaId = film.getMpa().getId();
+            Mpa mpa = Mpa.builder().id(mpaId).name(mpaStorage.getMpaById(mpaId).getName()).build();
+            film.setMpa(mpa);
+        }
+        if (film.getGenres().isEmpty()) {
+            film.setGenres(new LinkedHashSet<>(genreDbStorage.getGenresListForFilm(film.getId())));
+        }
+        if (film.getDirectors().isEmpty()) {
+            film.setDirectors(directorDbStorage.getDirectorListFromFilm(film.getId()));
+        }
+        return film;
     }
 }
