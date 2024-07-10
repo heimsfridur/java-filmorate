@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exceptions.AddException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
@@ -83,7 +84,7 @@ public class FilmDbStorage implements FilmStorage {
         if (directors != null && !directors.isEmpty()) {
             directorDbStorage.setDirectorsForFilm(directors, film.getId());
         }
-
+        Film fullFilm = addMpaGenresDirector(film);
         return addMpaGenresDirector(film);
     }
 
@@ -331,8 +332,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film addMpaGenresDirector(Film film) {
-        if (film.getMpa() == null) {
-            film.setMpa(mpaStorage.getMpaById(film.getId()));
+        if (film.getMpa().getName() == null) {
+            int mpaId = film.getMpa().getId();
+            Mpa mpa = Mpa.builder().id(mpaId).name(mpaStorage.getMpaById(mpaId).getName()).build();
+            film.setMpa(mpa);
         }
         if (film.getGenres().isEmpty()) {
             film.setGenres(new LinkedHashSet<>(genreDbStorage.getGenresListForFilm(film.getId())));
