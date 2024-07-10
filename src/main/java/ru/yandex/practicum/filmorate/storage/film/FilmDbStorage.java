@@ -84,7 +84,6 @@ public class FilmDbStorage implements FilmStorage {
         if (directors != null && !directors.isEmpty()) {
             directorDbStorage.setDirectorsForFilm(directors, film.getId());
         }
-        Film fullFilm = addMpaGenresDirector(film);
         return addMpaGenresDirector(film);
     }
 
