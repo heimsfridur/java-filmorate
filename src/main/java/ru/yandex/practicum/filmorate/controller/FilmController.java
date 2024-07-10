@@ -36,7 +36,7 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getById(@PathVariable Integer id) {
+    public Film getById(@PathVariable int id) {
         log.info(String.format("Received a request to get film with id %d", id));
         return filmService.getById(id);
     }
@@ -54,13 +54,13 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Received a request to like a film");
         filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Received a request to delete film");
         filmService.deleteLike(id, userId);
     }
@@ -81,13 +81,13 @@ public class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public List<Film> getFilmsByDirector(@PathVariable(required = false) Integer directorId, @RequestParam(required = false, name = "sortBy") String paramSort) {
+    public List<Film> getFilmsByDirector(@PathVariable(required = false) int directorId, @RequestParam(required = false, name = "sortBy") String paramSort) {
         log.info(String.format("Received films of director with id %s by %s sort", directorId, paramSort));
         return filmService.getFilmsOfDirectorBySort(directorId, paramSort);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFilmById(@PathVariable Integer id) {
+    public void deleteFilmById(@PathVariable int id) {
         log.info(String.format("Received a request to delete film with id = %d", id));
         filmService.deleteById(id);
     }
