@@ -45,4 +45,12 @@ public class Film {
     private LinkedHashSet<Genre> genres = new LinkedHashSet<>();
 
     private List<Director> directors = Collections.emptyList();
+
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+    }
 }
