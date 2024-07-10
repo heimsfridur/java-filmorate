@@ -32,7 +32,7 @@ public class FilmRowMapper implements RowMapper<Film> {
         String name = rs.getString("film_name");
         String description = rs.getString("film_description");
         LocalDate releaseDate = rs.getDate("film_releaseDate").toLocalDate();
-        Integer duration = rs.getInt("film_duration");
+        int duration = rs.getInt("film_duration");
         Mpa mpa = mpaStorage.getMpaById(rs.getInt("film_mpa"));
         LinkedHashSet<Genre> genres = new LinkedHashSet<>(genreStorage.getGenresListForFilm(id));
         List<Director> directors = directorStorage.getDirectorListFromFilm(id);
