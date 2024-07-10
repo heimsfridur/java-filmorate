@@ -41,13 +41,13 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Integer id) {
+    public void deleteById(@PathVariable int id) {
         log.info("Received a request to delete a review");
         reviewService.deleteById(id);
     }
 
     @GetMapping("/{id}")
-    public Review getById(@PathVariable Integer id) {
+    public Review getById(@PathVariable int id) {
         log.info(String.format("Received a request to get review with id %d", id));
         return reviewService.getById(id);
     }
@@ -61,26 +61,26 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLikeToReview(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void addLikeToReview(@PathVariable int id, @PathVariable int userId) {
         log.info(String.format("Received a request to like review with id %d from user %d", id, userId));
         reviewService.addReactionToReview(id, userId, ReactionType.LIKE);
     }
 
     @PutMapping("/{id}/dislike/{userId}")
-    public void addDislikeToReview(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void addDislikeToReview(@PathVariable int id, @PathVariable int userId) {
         log.info(String.format("Received a request to dislike review with id %d from user %d", id, userId));
         reviewService.addReactionToReview(id, userId, ReactionType.DISLIKE);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLikeFromReview(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void deleteLikeFromReview(@PathVariable int id, @PathVariable int userId) {
         log.info(String.format("Received a request to delete like from review %d from user %d", id, userId));
         reviewService.deleteReactionFromReview(id, userId, ReactionType.LIKE);
 
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
-    public void deleteDislikeFromReview(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void deleteDislikeFromReview(@PathVariable int id, @PathVariable int userId) {
         log.info(String.format("Received a request to delete dislike from review %d from user %d", id, userId));
         reviewService.deleteReactionFromReview(id, userId, ReactionType.DISLIKE);
     }
