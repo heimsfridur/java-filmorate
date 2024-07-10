@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -32,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class FilmDbStorageTest {
     private final FilmStorage filmStorage;
     private final DirectorStorage directorStorage;
-    private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
 
     @Test
@@ -61,7 +59,12 @@ public class FilmDbStorageTest {
     @Test
     @DirtiesContext
     public void shouldAddFilmTest() {
-
+        Genre genre = Genre.builder()
+                .id(1)
+                .name("Комедия")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre);
 
         Mpa mpa = Mpa.builder().id(1).name("G").build();
         Film film = Film.builder()
@@ -70,6 +73,7 @@ public class FilmDbStorageTest {
                 .releaseDate(LocalDate.of(2024, 10, 11))
                 .duration(150)
                 .mpa(mpa)
+                .genres(genres)
                 .directors(directorStorage.getDirectorListFromFilm(1))
                 .build();
 
