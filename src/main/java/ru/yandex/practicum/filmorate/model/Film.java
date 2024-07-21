@@ -7,11 +7,13 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.annotations.ValidReleaseDate;
 
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * Film.
@@ -20,6 +22,7 @@ import java.util.HashSet;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Film {
     private int id;
 
@@ -39,5 +42,16 @@ public class Film {
 
     private Mpa mpa;
 
-    private Set<Genre> genres = new HashSet<>();
+    private LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+
+    private List<Director> directors = Collections.emptyList();
+
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+    }
 }

@@ -11,7 +11,11 @@ import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -60,16 +64,16 @@ public class GenreDbStorage implements GenreStorage {
         jdbcTemplate.batchUpdate(insertGenreSql,
                 new BatchPreparedStatementSetter() {
 
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    Genre genre = (Genre) genres.toArray()[i];
-                    ps.setInt(1, film.getId());
-                    ps.setInt(2, genre.getId());
-                }
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        Genre genre = (Genre) genres.toArray()[i];
+                        ps.setInt(1, film.getId());
+                        ps.setInt(2, genre.getId());
+                    }
 
-                public int getBatchSize() {
-                    return genres.size();
-                }
-        });
+                    public int getBatchSize() {
+                        return genres.size();
+                    }
+                });
     }
 
     @Override
@@ -77,7 +81,7 @@ public class GenreDbStorage implements GenreStorage {
         final Map<Integer, Film> filmById = films.stream()
                 .collect(Collectors.toMap(Film::getId, identity()));
         String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
-        final String sqlQuery =  "SELECT fg.*, g.* " +
+        final String sqlQuery = "SELECT fg.*, g.* " +
                 "FROM genres g " +
                 "JOIN films_genres fg ON g.genre_id = fg.genre_id " +
                 "WHERE fg.film_id IN (" + inSql + ")";
@@ -91,12 +95,20 @@ public class GenreDbStorage implements GenreStorage {
                     Genre genre = genreRowMapper.mapRow(rs, rowNum);
                     log.debug("genre {} ", genre);
                     if (film.getGenres() == null) {
-                        film.setGenres(new HashSet<>());
+                        film.setGenres(new LinkedHashSet<>());
                     }
                     film.getGenres().add(genre);
                     return film;
-                 },
+                },
                 films.stream().map(Film::getId).toArray());
+    }
+
+    @Override
+    public List<Genre> getGenresListForFilm(Integer filmId) {
+        String sql = "SELECT fg.*, g.genre_name\n" +
+                "FROM films_genres AS fg JOIN genres AS g ON g.genre_id = fg.genre_id\n" +
+                "WHERE fg.film_id = ?";
+        return jdbcTemplate.query(sql, genreRowMapper, filmId);
     }
 
 
